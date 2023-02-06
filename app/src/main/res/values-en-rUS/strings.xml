@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Food Yum</string>
+    <string name="home" translatable="false">Home</string>
+    <string name="favourite">Favourite</string>
+    <string name="account" translatable="false">Account</string>
+    <string name="my_cart">My Cart</string>
+    <string name="daily_meal">Daily Meal</string>
+    <string name="support">Support</string>
+    <string name="order_payed">Order</string>
+    <string name="voucher">Voucher</string>
+    <string name="recommended">Recommended</string>
+    <string name="discount">Discount</string>
+    <string name="default_email" translatable="false">account@gmail.com</string>
+    <string name="favourite_food" translatable="false">Favorite Food</string>
+    <string name="order_history" translatable="false">Order History</string>
+    <string name="feedback" translatable="false">Feedback - Reviews</string>
+    <string name="log_out" translatable="false">Log out</string>
+    <string name="setting">Setting</string>
+    <string name="text_favourite">"10 Weekend Delicious "</string>
+    <string name="view_more" translatable="false">View more</string>
+    <string name="text2_favourite">Your favorite and testy food is here</string>
+    <string name="payment" translatable="false">Payment</string>
+    <string name="price" translatable="false">Price</string>
+    <string name="quantity" translatable="false">quantity</string>
+    <string name="product_name" translatable="false">Product\'s name</string>
+    <string name="breakfast" translatable="false">Breakfast</string>
+    <string name="description_default" translatable="false">Description Description</string>
+    <string name="food_name" translatable="false">Food Name</string>
+    <string name="name" translatable="false">Name</string>
+    <string name="price_default" translatable="false">0.0</string>
+    <string name="total_price">Total Price</string>
+
+    <string name="categories">Categories</string>
+    <string name="sign_in">Log in</string>
+    <string name="register">Register</string>
+    <string name="remember_me" translatable="false">Remember me</string>
+    <string name="do_not_have_acc" translatable="false">Don\'t Have Account?</string>
+    <string name="pass">Password</string>
+    <string name="email">Email</string>
+    <string name="confirm_pass">Enter the password</string>
+    <string name="already_register" translatable="false">Already Register?</string>
+    <string name="oops" translatable="false">OOPS!</string>
+    <string name="no_internet_connection" translatable="false">No Internet Connection</string>
+    <string name="please_check_your_connection" translatable="false">Please check your connection !!</string>
+    <string name="retry">Retry</string>
+    <string name="todo">TODO</string>
+    <string name="recently_added" translatable="false">Recently added</string>
+    <string name="search_your_favorite_food">Search Your Favorite Food</string>
+    <string name="text_search" translatable="false">What do you need?</string>
+    <string name="rice" translatable="false">Rice</string>
+    <string name="default_rate">4.8</string>
+    <string name="default_time">10:00–7:00</string>
+    <string name="default_price">120.0</string>
+    <string name="rice_en" translatable="false">Cơm / Rice</string>
+    <string name="default_product">Premium rib rice</string>
+    <string name="default_quantity_sold">(100+)</string>
+    <string name="default_distance">0.5km</string>
+    <string name="sort">Sort</string>
+    <string name="most_recent">Nearest</string>
+    <string name="good_review">Good review</string>
+    <string name="popular">popular</string>
+    <string name="best_selling" translatable="false">Best seller</string>
+    <string name="vi">VI</string>
+    <string name="add_to_cart">Add To Cart</string>
+    <string name="default_total_price">$ 0</string>
+    <string name="default_description">Description:</string>
+    <string name="default_time_delay">20 min</string>
+    <string name="default_title">Product`s name</string>
+    <string name="default_quantity">1</string>
+    <string name="default_calo">70 calories</string>
+    <string name="forgot_pass">Forgot password</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
+    <string name="default_name_restaurant">Com Rang - Mi Xao - Tran Quoc Hoan</string>
+    <string name="please_wait">Please wait</string>
+    <string name="dot">•</string>
+    <string name="partner">FoodYum`s Partner</string>
+    <string name="default_address">Co nhue 2 Nam Tu Liem Ha Noi</string>
+    <string name="not_open_yet">Not open yet</string>
+    <string name="open_time">Open 7:10 PM</string>
+    <string name="default_discount">Fried rice - Fried noodles - Tran Quoc Hoan </string>
+    <string name="default_add_to_cart">Extra • 456,000 VND</string>
+    <string name="default_description_detail">Rice set includes white rice, super delicious pepper chicken (all thighs are changed to thighs), seasonal vegetables, eating utensils.</string>
+    <string name="price_new">456.000đ</string>
+    <string name="notes">Do you have a message for the restaurant ?</string>
+    <string name="default_value_discount">10%</string>
+</resources>
