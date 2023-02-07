@@ -6,11 +6,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import vungnv.com.foodyum.database.DbCart;
 import vungnv.com.foodyum.model.ItemCart;
+import vungnv.com.foodyum.model.User;
 
 
 public class ItemCartDAO {
@@ -21,7 +24,7 @@ public class ItemCartDAO {
         db = dbHelper.getWritableDatabase();
     }
 
-    public long insert(ItemCart obj) {
+    public long insert(@NonNull ItemCart obj) {
         ContentValues values = new ContentValues();
         values.put("id", obj.id);
         values.put("name", obj.name);
@@ -30,14 +33,33 @@ public class ItemCartDAO {
         values.put("quantity", obj.quantity);
         values.put("status", obj.status);
         values.put("price", obj.price);
+        values.put("notes", obj.notes);
 
         return db.insert("Cart", null, values);
     }
 
+    public int updateStatus(@NonNull ItemCart obj) {
+        ContentValues values = new ContentValues();
+        values.put("status", obj.status);
 
-    public List<ItemCart> getALL(String type) {
-        String sql = "SELECT * FROM Cart";
-        return getData(sql, type);
+        return db.update("Cart", values, "id=?", new String[]{obj.id});
+    } public int updateQuantity(@NonNull ItemCart obj) {
+        ContentValues values = new ContentValues();
+        values.put("quantity", obj.quantity);
+
+        return db.update("Cart", values, "id=?", new String[]{obj.id});
+    }
+    public int updatePrice(@NonNull ItemCart obj) {
+        ContentValues values = new ContentValues();
+        values.put("price", obj.price);
+
+        return db.update("Cart", values, "id=?", new String[]{obj.id});
+    }
+
+
+    public List<ItemCart> getALL(int status) {
+        String sql = "SELECT * FROM Cart WHERE status=?";
+        return getData(sql, String.valueOf(status));
     }
 
 
@@ -51,6 +73,7 @@ public class ItemCartDAO {
         return getData(sql, type);
     }
 
+    @NonNull
     @SuppressLint("Range")
     private List<ItemCart> getData(String sql, String... selectionArgs) {
         List<ItemCart> list = new ArrayList<>();
@@ -65,6 +88,7 @@ public class ItemCartDAO {
             obj.quantity = Integer.parseInt(cursor.getString(cursor.getColumnIndex("quantity")));
             obj.status = Integer.parseInt(cursor.getString(cursor.getColumnIndex("status")));
             obj.price = Double.valueOf(cursor.getString(cursor.getColumnIndex("price")));
+            obj.notes = cursor.getString(cursor.getColumnIndex("notes"));
 
             list.add(obj);
 

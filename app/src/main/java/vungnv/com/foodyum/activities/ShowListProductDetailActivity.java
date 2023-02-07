@@ -61,7 +61,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
     private RecyclerView rcvListProduct;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private int temp = 0;
-
+    private boolean isReady = false;
     private SpotsDialog progressDialog;
     NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
@@ -77,8 +77,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ShowListProductDetailActivity.this, MainActivity.class));
-                finishAffinity();
+                onBackPressed();
             }
         });
         temp++;
@@ -166,7 +165,6 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
         toolbar = findViewById(R.id.toolBarShowListDetail);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_list_product);
         swipeRefreshLayout.setOnRefreshListener(this);
-        toolbar = findViewById(R.id.toolBarShowListDetail);
         tvNameCate = findViewById(R.id.tvNameCate);
         rcvListProduct = findViewById(R.id.rcvListProduct);
         btnFilter = findViewById(R.id.btnFilter);
@@ -191,6 +189,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
                 }
                 if (aListProducts.size() == 0) {
                     Toast.makeText(ShowListProductDetailActivity.this, NO_DATA, Toast.LENGTH_SHORT).show();
+                    isReady = true;
                     progressDialog.dismiss();
                     return;
                 }
@@ -204,6 +203,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
                 rcvListProduct.addItemDecoration(dividerItemDecoration);
                 rcvListProduct.setHasFixedSize(true);
                 rcvListProduct.setNestedScrollingEnabled(false);
+                isReady = true;
                 progressDialog.dismiss();
 
             }
@@ -211,6 +211,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 // Failed to read value
+                isReady = true;
                 Log.d(TAG, "Failed to read value.", error.toException());
                 progressDialog.dismiss();
             }
@@ -247,5 +248,10 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
         super.onStop();
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if (isReady){
+            super.onBackPressed();
+        }
+    }
 }

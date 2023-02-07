@@ -37,30 +37,45 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.RegisterActivity"
+        <activity
+            android:name=".activities.RegisterActivity"
             android:exported="false">
 
         </activity>
-        <activity android:name=".activities.SearchDetailActivity"
+        <activity
+            android:name=".activities.SearchDetailActivity"
             android:exported="false">
 
         </activity>
-        <activity android:name=".activities.AddToCartActivity"
+        <activity
+            android:name=".activities.AddToCartActivity"
             android:exported="true">
 
         </activity>
-        <activity android:name=".activities.OptionFilterActivity"
+        <activity
+            android:name=".activities.OptionFilterActivity"
             android:exported="false">
 
         </activity>
-        <activity android:name=".activities.ShowAllProductsByMerchantActivity"
+        <activity
+            android:name=".activities.ShowAllProductsByMerchantActivity"
             android:exported="false">
 
         </activity>
-        <activity android:name=".activities.ShowListProductDetailActivity"
+
+        <service
+            android:name=".fcm.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <activity
+            android:name=".activities.ShowListProductDetailActivity"
             android:exported="false">
 
         </activity>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

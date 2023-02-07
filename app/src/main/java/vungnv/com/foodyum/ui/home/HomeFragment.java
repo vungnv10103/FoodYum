@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import dmax.dialog.SpotsDialog;
 import me.relex.circleindicator.CircleIndicator3;
@@ -43,8 +44,9 @@ import vungnv.com.foodyum.databinding.FragmentHomeBinding;
 import vungnv.com.foodyum.model.Category;
 import vungnv.com.foodyum.model.Product;
 import vungnv.com.foodyum.model.ProductSlideShow;
+import vungnv.com.foodyum.utils.OnBackPressed;
 
-public class HomeFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
+public class HomeFragment extends Fragment implements OnBackPressed, Constant, SwipeRefreshLayout.OnRefreshListener {
 
     private FragmentHomeBinding binding;
 
@@ -55,6 +57,7 @@ public class HomeFragment extends Fragment implements Constant, SwipeRefreshLayo
     private final ArrayList<Category> aListCate = new ArrayList<>();
     private ArrayList<ProductSlideShow> aListSlideShow;
 
+    private boolean isReady = false;
 
     EditText edSearch;
     TextView tvSeeMore;
@@ -89,7 +92,7 @@ public class HomeFragment extends Fragment implements Constant, SwipeRefreshLayo
         return root;
     }
 
-    private void init(View view){
+    private void init(View view) {
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         edSearch = view.findViewById(R.id.edSearchHome);
@@ -156,11 +159,14 @@ public class HomeFragment extends Fragment implements Constant, SwipeRefreshLayo
                         handler.postDelayed(runnable, 5000);
                     }
                 });
+                isReady = true;
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                isReady = true;
                 progressDialog.dismiss();
+
             }
         });
 
@@ -185,6 +191,7 @@ public class HomeFragment extends Fragment implements Constant, SwipeRefreshLayo
                 }
                 CategoriesAdapter categoriesAdapter = new CategoriesAdapter(getContext(), R.layout.item_category, aListCate);
                 gridViewCategories.setAdapter(categoriesAdapter);
+                isReady = true;
                 progressDialog.dismiss();
 
                 gridViewCategories.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -200,6 +207,7 @@ public class HomeFragment extends Fragment implements Constant, SwipeRefreshLayo
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                isReady = true;
                 progressDialog.dismiss();
             }
         });
@@ -214,5 +222,13 @@ public class HomeFragment extends Fragment implements Constant, SwipeRefreshLayo
             listSlideShow();
             listCate();
         }, 1500);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isReady) {
+            requireActivity().onBackPressed();
+        }
+
     }
 }

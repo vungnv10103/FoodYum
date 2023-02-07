@@ -387,14 +387,10 @@ public class LoginActivity extends AppCompatActivity implements Constant {
     private void rememberUser(String email, String pass, boolean isRemember) {
         SharedPreferences pref = getSharedPreferences("USER_FILE", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        if (!isRemember) {
-            editor.clear();
-        } else {
-            // save data
-            editor.putString("EMAIL", email);
-            editor.putString("PASSWORD", pass);
-            editor.putBoolean("REMEMBER", true);
-        }
+        // save data
+        editor.putString("EMAIL", email);
+        editor.putString("PASSWORD", pass);
+        editor.putBoolean("REMEMBER", true);
         // save
         editor.apply();
     }
@@ -455,7 +451,6 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                         try {
                             addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
-//                                    edLocation.setText("" + addresses.get(0).getAddressLine(0));
                             mLocation = addresses.get(0).getAddressLine(0);
 
                         } catch (IOException e) {
@@ -551,11 +546,11 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         SharedPreferences pref = getSharedPreferences("USER_FILE", MODE_PRIVATE);
         if (pref != null) {
             boolean isSave = pref.getBoolean("REMEMBER", false);
-            if (isSave){
+            if (isSave) {
                 btnLogin.setOnClickListener(null);
                 String email = pref.getString("EMAIL", "");
                 String pass = pref.getString("PASSWORD", "");
-                login(email,pass);
+                login(email, pass);
 
             }
 

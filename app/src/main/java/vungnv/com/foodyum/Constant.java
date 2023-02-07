@@ -26,6 +26,8 @@ public interface Constant {
     String REGISTER_FAIL = "Đăng ký thất bại !!";
     String WRONG_EMAIL_FORMAT = "Email sai định dạng !!";
     String NO_DATA = "Không có dữ liệu !!";
-    String ADDED = "Đã thêm vào giỏ hàng !!";
+    String ADD_SUCCESS = "Đã thêm vào giỏ hàng !!";
+    String ADD_FAIL = "Thêm thất bại !";
+    String CART_EMPTY = "Giỏ hàng trống !";
 
 }

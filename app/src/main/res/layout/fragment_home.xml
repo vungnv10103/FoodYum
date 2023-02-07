@@ -8,157 +8,165 @@
 
     >
 
-    <androidx.core.widget.NestedScrollView
-
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        tools:context=".ui.home.HomeFragment">
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.core.widget.NestedScrollView
+
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            tools:context=".ui.home.HomeFragment">
 
 
-            <EditText
-                android:id="@+id/edSearchHome"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="28dp"
-                android:autofillHints=""
-                android:background="@drawable/search_edit_text_background"
-                android:ems="10"
-                android:focusableInTouchMode="false"
-                android:hint="@string/text_search"
-                android:inputType="textPersonName"
-                android:paddingStart="60dp"
-                android:paddingEnd="60dp"
-                android:textStyle="italic"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.473"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginTop="12dp"
-                android:contentDescription="@string/todo"
-                android:src="@drawable/ic_baseline_search_24"
-                app:layout_constraintStart_toStartOf="@+id/edSearchHome"
-                app:layout_constraintTop_toTopOf="@+id/edSearchHome" />
-
-            <RelativeLayout
-                android:id="@+id/rltSlideShow"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edSearchHome"
-                tools:layout_editor_absoluteY="98dp">
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edSearchHome"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="28dp"
+                    android:autofillHints=""
+                    android:background="@drawable/search_edit_text_background"
+                    android:ems="10"
+                    android:focusableInTouchMode="false"
+                    android:hint="@string/text_search"
+                    android:inputType="textPersonName"
+                    android:paddingStart="60dp"
+                    android:paddingEnd="60dp"
+                    android:textStyle="italic"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.473"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="12dp"
+                    android:contentDescription="@string/todo"
+                    android:src="@drawable/ic_baseline_search_24"
+                    app:layout_constraintStart_toStartOf="@+id/edSearchHome"
+                    app:layout_constraintTop_toTopOf="@+id/edSearchHome" />
+
+                <RelativeLayout
+                    android:id="@+id/rltSlideShow"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edSearchHome"
+                    tools:layout_editor_absoluteY="98dp">
 
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/viewpager_slideshow"
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/viewpager_slideshow"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:paddingHorizontal="35dp" />
+
+                    <me.relex.circleindicator.CircleIndicator3
+                        android:id="@+id/indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="170dp"
+                        app:ci_drawable="@drawable/bg_indicator" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tvCategories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/alice"
+                    android:text="@string/categories"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/rltSlideShow"
+                    app:layout_constraintTop_toBottomOf="@+id/rltSlideShow" />
+
+                <GridView
+                    android:id="@+id/gridViewCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp"
+                    android:layout_marginHorizontal="15dp"
+                    android:numColumns="4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCategories"
+                    tools:ignore="NestedScrolling" />
+
+                <TextView
+                    android:id="@+id/tvRecommend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/alice"
+                    android:text="@string/recommended"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/gridViewCategories" />
+
+                <TextView
+                    android:id="@+id/tvSeeMore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="25dp"
+                    android:text="@string/view_more"
+                    android:textColor="#ff3d0d"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvRecommend"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvRecommend"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rcvRecommend"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:paddingHorizontal="35dp" />
+                    android:layout_marginHorizontal="10dp"
+                    app:layout_constraintTop_toBottomOf="@+id/tvRecommend"
+                    tools:layout_editor_absoluteX="0dp" />
 
-                <me.relex.circleindicator.CircleIndicator3
-                    android:id="@+id/indicator"
+                <TextView
+                    android:id="@+id/textView8"
                     android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="170dp"
-                    app:ci_drawable="@drawable/bg_indicator" />
-            </RelativeLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/alice"
+                    android:text="@string/recently_added"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/tvRecommend"
+                    app:layout_constraintTop_toBottomOf="@+id/rcvRecommend" />
 
-            <TextView
-                android:id="@+id/tvCategories"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/alice"
-                android:text="@string/categories"
-                android:textColor="#000000"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/rltSlideShow"
-                app:layout_constraintTop_toBottomOf="@+id/rltSlideShow" />
-
-            <GridView
-                android:id="@+id/gridViewCategories"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginHorizontal="15dp"
-                android:numColumns="4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvCategories" />
-
-            <TextView
-                android:id="@+id/tvRecommend"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/alice"
-                android:text="@string/recommended"
-                android:textColor="#000000"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/gridViewCategories" />
-
-            <TextView
-                android:id="@+id/tvSeeMore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="25dp"
-                android:text="@string/view_more"
-                android:textColor="#ff3d0d"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/tvRecommend"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvRecommend"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcvRecommend"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginHorizontal="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/tvRecommend"
-                tools:layout_editor_absoluteX="0dp" />
-
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/alice"
-                android:text="@string/recently_added"
-                android:textColor="#000000"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/tvRecommend"
-                app:layout_constraintTop_toBottomOf="@+id/rcvRecommend" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcvOtherData"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                app:layout_constraintTop_toBottomOf="@+id/textView8"
-                tools:layout_editor_absoluteX="0dp" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rcvOtherData"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8"
+                    tools:layout_editor_absoluteX="0dp" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

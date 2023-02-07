@@ -2,6 +2,7 @@ package vungnv.com.foodyum.model;
 
 public class Product {
     public int stt;
+    public String id;
     public String idUser;
     public String type;
     public String img;
@@ -22,11 +23,12 @@ public class Product {
     public Product() {
     }
 
-    public Product(int stt, String idUser, String type, String img, String name,
+    public Product(int stt, String id, String idUser, String type, String img, String name,
                    String description, String timeDelay, Double price, Double rate,
                    int favourite, int check, int status, String address, String feedBack,
                    int quantity_sold, int quantityTotal) {
         this.stt = stt;
+        this.id = id;
         this.idUser = idUser;
         this.type = type;
         this.img = img;

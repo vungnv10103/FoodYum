@@ -214,22 +214,17 @@
             android:layout_width="47dp"
             android:layout_height="53dp"
             android:layout_margin="10dp"
-            android:src="@drawable/icon_facebook" />
+            android:src="@drawable/icon_facebook"
+            android:contentDescription="@string/todo" />
 
         <ImageView
             android:id="@+id/logWithGoogle"
             android:layout_width="43dp"
             android:layout_height="51dp"
             android:layout_margin="10dp"
-            android:src="@drawable/icon_google" />
-        <!--        <com.google.android.gms.common.SignInButton-->
-        <!--            android:id="@+id/sign_in_button"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content" />-->
-
+            android:src="@drawable/icon_google"
+            android:contentDescription="@string/todo"/>
 
     </LinearLayout>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

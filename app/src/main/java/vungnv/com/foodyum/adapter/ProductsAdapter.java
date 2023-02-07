@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +28,10 @@ import java.util.List;
 
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.R;
+import vungnv.com.foodyum.activities.AddToCartActivity;
 import vungnv.com.foodyum.activities.ShowAllProductsByMerchantActivity;
 import vungnv.com.foodyum.model.Product;
+import vungnv.com.foodyum.model.ProductRecommend;
 
 
 public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHolder> implements Constant {
@@ -98,7 +101,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
 
     public static class viewHolder extends RecyclerView.ViewHolder {
         TextView tvRate, tvQuantitySold, tvDistance;
-        ExpandableTextView tvDesc , tvTitle;
+        ExpandableTextView tvDesc, tvTitle;
         ImageView img;
 
         public viewHolder(@NonNull View itemView) {
@@ -110,12 +113,28 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             tvRate = itemView.findViewById(R.id.tvRateProduct);
             tvQuantitySold = itemView.findViewById(R.id.tvQuantitySold);
             tvDistance = itemView.findViewById(R.id.tvDistance);
-            
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, ShowAllProductsByMerchantActivity.class);
-                    intent.putExtra("idUser", list.get(getAdapterPosition()).idUser);
+                    Bundle bundle = new Bundle();
+                    Product item = list.get(getAdapterPosition());
+
+                    bundle.putBoolean("isShowBottomSheet", true);
+                    bundle.putString("id", item.id);
+                    bundle.putString("idUser", item.idUser);
+                    intent.putExtra("data", bundle);
+                    bundle.putString("img", item.img);
+                    bundle.putString("name", item.name);
+                    bundle.putString("desc", item.description);
+                    bundle.putDouble("discount", item.discount);
+                    if (item.discount > 0) {
+                        bundle.putDouble("price", item.price - item.price / 100 * item.discount);
+                    } else {
+                        bundle.putDouble("price", item.price);
+                    }
+                    intent.putExtra("data", bundle);
                     context.startActivity(intent);
                 }
             });

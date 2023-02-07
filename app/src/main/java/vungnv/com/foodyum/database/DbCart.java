@@ -24,6 +24,7 @@ public class DbCart extends SQLiteOpenHelper implements Constant {
                 "dateTime TEXT not null," +
                 "quantity INTEGER not null," +
                 "status INTEGER not null," +
+                "notes TEXT ," +
                 "price REAL not null)";
         db.execSQL(createTableCart);
     }
