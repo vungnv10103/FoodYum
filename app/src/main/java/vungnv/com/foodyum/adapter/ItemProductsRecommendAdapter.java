@@ -136,6 +136,7 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
                     bundle.putString("idUser", item.idUser);
                     bundle.putString("img", item.img);
                     bundle.putString("name", item.name);
+                    bundle.putDouble("discount", item.discount);
                     if (item.discount > 0) {
                         bundle.putDouble("price", item.price - item.price / 100 * item.discount);
                     } else {

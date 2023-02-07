@@ -11,6 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 import vungnv.com.foodyum.databinding.ActivityMainBinding;
 import vungnv.com.foodyum.utils.NetworkChangeListener;
+import vungnv.com.foodyum.utils.OnBackPressed;
 import vungnv.com.foodyum.utils.createNotificationChannel;
 
 
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements Constant {
             String idScreen = data.getString("screen");
             if (idScreen.equals("cart")) {
                 navController.navigate(R.id.navigation_cart);
+                NavigationUI.setupWithNavController(binding.navView, navController);
             }
         }
 
@@ -66,22 +69,28 @@ public class MainActivity extends AppCompatActivity implements Constant {
 
     @Override
     public void onBackPressed() {
-
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        int currentDestinationId = Objects.requireNonNull(navController.getCurrentDestination()).getId();
-
-        if (currentDestinationId == R.id.navigation_home) {
-            if (backPressCount == 0) {
-                backPressCount++;
-                Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
-                handler.postDelayed(runnable, 3000);
-            } else {
-                finish();
-            }
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+        if (fragment instanceof OnBackPressed) {
+            ((OnBackPressed) fragment).onBackPressed();
         } else {
-            navController.navigate(R.id.navigation_home);
-            backPressCount = 0;
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+            int currentDestinationId = Objects.requireNonNull(navController.getCurrentDestination()).getId();
+
+            if (currentDestinationId == R.id.navigation_home) {
+                if (backPressCount == 0) {
+                    backPressCount++;
+                    Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
+                    handler.postDelayed(runnable, 3000);
+                } else {
+                    finish();
+                }
+            } else {
+                navController.navigate(R.id.navigation_home);
+                backPressCount = 0;
+            }
         }
+
+
     }
 
     @Override

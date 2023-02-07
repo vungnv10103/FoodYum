@@ -9,11 +9,12 @@ public class ItemCart {
     public int status;
     public int quantity;
     public Double price;
+    public String notes;
 
     public ItemCart() {
     }
 
-    public ItemCart(int stt, String id, String name, String idUser, String dateTime, int status, int quantity, Double price) {
+    public ItemCart(int stt, String id, String name, String idUser, String dateTime, int status, int quantity, Double price, String notes) {
         this.stt = stt;
         this.id = id;
         this.name = name;
@@ -22,5 +23,6 @@ public class ItemCart {
         this.status = status;
         this.quantity = quantity;
         this.price = price;
+        this.notes = notes;
     }
 }

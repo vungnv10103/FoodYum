@@ -1,13 +1,16 @@
 package vungnv.com.foodyum.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -41,9 +44,8 @@ import vungnv.com.foodyum.model.ItemCart;
 
 
 public class AddToCartActivity extends AppCompatActivity implements Constant {
-    private ImageButton imgBack;
     private ImageView imgProduct;
-    private TextView tvNameProduct, tvPrice, tvDesc;
+    private TextView tvNameProduct, tvOldPrice, tvNewPrice, tvDesc;
     private EditText edNote;
     private RecyclerView rcvCombo;
     private ImageButton imgDecrease, imgIncrease;
@@ -58,6 +60,8 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
 
     private ItemCartDAO itemCartDAO;
 
+    private boolean isReady = false;
+
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,16 +70,17 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
         setContentView(R.layout.activity_add_to_cart);
 
         init();
-        fillData();
-
-        imgBack.setOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 onBackPressed();
             }
         });
+        fillData();
 
-        String sPrice = tvPrice.getText().toString().trim();
+
+        String sPrice = tvNewPrice.getText().toString().trim();
         double priceOfOne = Double.parseDouble(sPrice.substring(0, sPrice.length() - 1));
 
 
@@ -85,10 +90,12 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
                 int currentQuantity = Integer.parseInt(tvQuantity.getText().toString().trim());
                 currentQuantity++;
                 if (currentQuantity > 20) {
+                    animationIncrease(currentQuantity, imgIncrease);
                     return;
                 }
                 tvQuantity.setText(String.valueOf(currentQuantity));
-                animation(currentQuantity);
+                animationIncrease(currentQuantity, imgIncrease);
+                animationDecrease(currentQuantity, imgDecrease);
                 btnAddToCart.setText("Thêm • " + priceOfOne * currentQuantity + "đ");
 
             }
@@ -102,7 +109,8 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
                     return;
                 }
                 tvQuantity.setText(String.valueOf(currentQuantity));
-                animation(currentQuantity);
+                animationIncrease(currentQuantity, imgIncrease);
+                animationDecrease(currentQuantity, imgDecrease);
                 btnAddToCart.setText("Thêm • " + priceOfOne * currentQuantity + "đ");
             }
         });
@@ -130,7 +138,7 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
 //                item.items =
 
                 double price = Double.parseDouble(btnAddToCart.getText().toString().trim().substring(6, btnAddToCart.getText().toString().trim().length() - 1));
-
+                String notes = edNote.getText().toString().trim();
                 ItemCart item = new ItemCart();
                 item.id = id;
                 item.name = tvNameProduct.getText().toString().trim();
@@ -139,17 +147,23 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
                 item.quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
                 item.status = 1;
                 item.price = price;
+                item.notes = notes;
+
 
                 if (itemCartDAO.insert(item) > 0) {
                     Log.d(TAG, "insert local db cart success");
-                    Toast.makeText(AddToCartActivity.this,ADDED , Toast.LENGTH_SHORT).show();
-                    onBackPressed();
-                }
-                else {
+                    Toast.makeText(AddToCartActivity.this, ADD_SUCCESS, Toast.LENGTH_SHORT).show();
+                    View view = AddToCartActivity.this.getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                } else {
+                    Toast.makeText(AddToCartActivity.this, ADD_FAIL, Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "insert local db cart fail");
                 }
 
-
+            isReady = true;
             }
         });
 
@@ -158,10 +172,10 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
 
 
     private void init() {
-        imgBack = findViewById(R.id.imgBack);
         imgProduct = findViewById(R.id.imgProduct1);
         tvNameProduct = findViewById(R.id.tvNameProduct);
-        tvPrice = findViewById(R.id.tvPrice);
+        tvOldPrice = findViewById(R.id.tvOldPrice);
+        tvNewPrice = findViewById(R.id.tvNewPrice);
         tvDesc = findViewById(R.id.tvDescription);
         edNote = findViewById(R.id.edNote);
         rcvCombo = findViewById(R.id.rcvListCombo);
@@ -209,18 +223,24 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
         processDialog.show();
         Bundle data = getIntent().getBundleExtra("data");
         if (data != null) {
-
             idUser = data.getString("idUser");
             id = data.getString("id");
             double priceOfOne = data.getDouble("price");
             tvNameProduct.setText(data.getString("name"));
-            tvPrice.setText(priceOfOne + "đ");
+            double discount = data.getDouble("discount");
+            tvOldPrice.setText(priceOfOne / (1 - discount / 100) + "đ");
+            if (discount == 0) {
+                tvOldPrice.setVisibility(View.INVISIBLE);
+            }
+            tvOldPrice.setPaintFlags(tvOldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            tvNewPrice.setText(priceOfOne + "đ");
             tvDesc.setText(data.getString("desc"));
             setImage(data.getString("img"));
             btnAddToCart.setText("Thêm • " + priceOfOne + "đ");
 
 
         }
+        isReady = true;
         processDialog.dismiss();
     }
 
@@ -243,15 +263,33 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
                 Log.d(TAG, "get image from firebase: " + exception.getMessage());
             }
         });
+        isReady = true;
     }
 
-    private void animation(int currentQuantity) {
+    private void animationDecrease(int currentQuantity, ImageButton imgDecrease) {
         if (currentQuantity > 1) {
             imgDecrease.setImageResource(R.drawable.ic_decrease_teal);
             imgDecrease.setBackgroundResource(R.drawable.bg_corner_img_button_increase);
         } else {
             imgDecrease.setImageResource(R.drawable.ic_decrease_gray);
             imgDecrease.setBackgroundResource(R.drawable.bg_corner_img_button_decrease);
+        }
+    }
+
+    private void animationIncrease(int currentQuantity, ImageButton imgIncrease) {
+        if (currentQuantity >= 20) {
+            imgIncrease.setImageResource(R.drawable.ic_increase_gray);
+            imgIncrease.setBackgroundResource(R.drawable.bg_corner_img_button_decrease);
+        } else {
+            imgIncrease.setImageResource(R.drawable.ic_increase_teal);
+            imgIncrease.setBackgroundResource(R.drawable.bg_corner_img_button_increase);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isReady){
+            super.onBackPressed();
         }
     }
 }

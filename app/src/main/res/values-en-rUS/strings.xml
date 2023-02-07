@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Food Yum</string>
+    <string name="app_name">FoodYum</string>
     <string name="home" translatable="false">Home</string>
     <string name="favourite">Favourite</string>
     <string name="account" translatable="false">Account</string>
