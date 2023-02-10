@@ -133,7 +133,7 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
                     ProductRecommend item = list.get(getAdapterPosition());
 
                     bundle.putString("id", item.id);
-                    bundle.putString("idUser", item.idUser);
+                    bundle.putString("idMerchant", item.idUser);
                     bundle.putString("img", item.img);
                     bundle.putString("name", item.name);
                     bundle.putDouble("discount", item.discount);

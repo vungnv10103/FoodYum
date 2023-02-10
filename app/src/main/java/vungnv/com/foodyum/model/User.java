@@ -12,11 +12,14 @@ public class User {
     public String phoneNumber;
     public String address;
     public String searchHistory;
+    public String favouriteRestaurant;
     public String coordinates;
     public String feedback;
 
 
-    public User(int stt, String id, String img, String name, String email, String pass, String phoneNumber, String searchHistory, String address, String coordinates, String feedback) {
+    public User(int stt, String id, String img, String name, String email, String pass,
+                String phoneNumber, String searchHistory, String favouriteRestaurant,
+                String address, String coordinates, String feedback) {
         this.stt = stt;
         this.id = id;
         this.img = img;
@@ -25,6 +28,7 @@ public class User {
         this.pass = pass;
         this.phoneNumber = phoneNumber;
         this.searchHistory = searchHistory;
+        this.favouriteRestaurant = favouriteRestaurant;
         this.address = address;
         this.coordinates = coordinates;
         this.feedback = feedback;

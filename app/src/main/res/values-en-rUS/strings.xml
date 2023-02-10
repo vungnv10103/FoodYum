@@ -51,7 +51,7 @@
     <string name="rice" translatable="false">Rice</string>
     <string name="default_rate">4.8</string>
     <string name="default_time">10:00–7:00</string>
-    <string name="default_price">120.0</string>
+    <string name="default_price">45.0000đ</string>
     <string name="rice_en" translatable="false">Cơm / Rice</string>
     <string name="default_product">Premium rib rice</string>
     <string name="default_quantity_sold">(100+)</string>
@@ -85,4 +85,23 @@
     <string name="price_new">456.000đ</string>
     <string name="notes">Do you have a message for the restaurant ?</string>
     <string name="default_value_discount">10%</string>
+    <string name="search">Search</string>
+    <string name="payment_page">Payment Page</string>
+    <string name="order">Order</string>
+    <string name="address">Delivery address</string>
+    <string name="customer_name">Customer`s full name |</string>
+    <string name="phone">Phone Number</string>
+    <string name="address_detail">Delivery address</string>
+    <string name="cash">Cash</string>
+    <string name="add_coupon">Add coupon</string>
+    <string name="fees_apply">Fees Apply</string>
+    <string name="transport_fee">Transport Fee</string>
+    <string name="service_charge">Service charge</string>
+    <string name="default_service_charge">2.000đ</string>
+    <string name="coupons">Coupons</string>
+    <string name="select">Select</string>
+    <string name="expiry">Expiry date: 29.03.2023</string>
+    <string name="decrease">Value</string>
+    <string name="apply">Apply</string>
+    <string name="enter_discount_code">Enter discount code here</string>
 </resources>

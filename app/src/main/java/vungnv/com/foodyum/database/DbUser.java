@@ -27,6 +27,7 @@ public class DbUser extends SQLiteOpenHelper implements Constant {
                 "pass TEXT not null," +
                 "phoneNumber TEXT ," +
                 "searchHistory TEXT ," +
+                "favouriteRestaurant TEXT ," +
                 "feedback TEXT ," +
                 "coordinates TEXT ," +
                 "address TEXT not null)";

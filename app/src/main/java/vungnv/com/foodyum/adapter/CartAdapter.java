@@ -25,13 +25,13 @@ import vungnv.com.foodyum.ui.cart.CartFragment;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> implements Constant {
     private final Context context;
-    private final List<ItemCart> listItem;
+    private static List<ItemCart> listItem;
     private UsersDAO usersDAO;
     private ItemCartDAO itemCartDAO;
 
     public CartAdapter(Context context, List<ItemCart> listItem) {
         this.context = context;
-        this.listItem = listItem;
+        CartAdapter.listItem = listItem;
     }
 
     @NonNull
@@ -169,8 +169,16 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
             cbCheck = itemView.findViewById(R.id.cbSelected);
             imgDecrease = itemView.findViewById(R.id.imgDecrease);
             imgIncrease = itemView.findViewById(R.id.imgIncrease);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), "" + listItem.get(getAdapterPosition()).idMerchant, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
+
 
     private void animationDecrease(int currentQuantity, ImageButton imgDecrease) {
         if (currentQuantity > 1) {

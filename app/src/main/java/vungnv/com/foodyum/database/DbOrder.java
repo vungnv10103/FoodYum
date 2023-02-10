@@ -9,31 +9,30 @@ import androidx.annotation.Nullable;
 import vungnv.com.foodyum.Constant;
 
 
-public class DbCart extends SQLiteOpenHelper implements Constant {
-    public DbCart(@Nullable Context context) {
-        super(context, DB_CART, null, DB_VERSION);
+public class DbOrder extends SQLiteOpenHelper implements Constant {
+    public DbOrder(@Nullable Context context) {
+        super(context, DB_ORDER, null, DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableCart = "create table Cart(" +
+        String createTableOrder = "create table Orders(" +
                 "stt INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id TEXT not null," +
-                "name TEXT not null," +
                 "idUser TEXT not null," +
                 "idMerchant TEXT not null," +
                 "dateTime TEXT not null," +
-                "quantity INTEGER not null," +
+                "items TEXT not null," +
                 "status INTEGER not null," +
-                "notes TEXT ," +
+                "notes TEXT not null," +
                 "price REAL not null)";
-        db.execSQL(createTableCart);
+        db.execSQL(createTableOrder);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropTableCart = "drop table if exists Cart";
-        db.execSQL(dropTableCart);
+        String dropTableOrder = "drop table if exists Orders";
+        db.execSQL(dropTableOrder);
 
         onCreate(db);
     }
