@@ -85,6 +85,25 @@
     <string name="price_new">456.000đ</string>
     <string name="notes">Bạn có muốn nhắn gì với nhà hàng không ?</string>
     <string name="default_value_discount">10%</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="payment_page">Trang thanh toán</string>
+    <string name="order">Đặt hàng</string>
+    <string name="address">Địa chỉ nhận hàng</string>
+    <string name="customer_name">Họ tên KH |</string>
+    <string name="phone">Số điện thoại</string>
+    <string name="address_detail">Địa chỉ nhận hàng</string>
+    <string name="cash">Tiền mặt</string>
+    <string name="add_coupon">Thêm coupon</string>
+    <string name="fees_apply">Phí áp dụng</string>
+    <string name="transport_fee">Phí vận chuyển</string>
+    <string name="service_charge">Phí dịch vụ</string>
+    <string name="default_service_charge">2.000đ</string>
+    <string name="coupons">Coupons</string>
+    <string name="select">Chọn</string>
+    <string name="expiry">HSD: 29.03.2023</string>
+    <string name="decrease">Giảm</string>
+    <string name="apply">Áp dụng</string>
+    <string name="enter_discount_code">Nhập mã giảm giá ở đây</string>
 
 
 </resources>

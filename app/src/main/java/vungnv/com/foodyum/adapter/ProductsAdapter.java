@@ -89,6 +89,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         Location.distanceBetween(currentLatitude, currentLongitude, productLatitude, productLongitude, results);
         float distanceInMeters = results[0];
         holder.tvDistance.setText(String.format("%.1f", distanceInMeters / 1000) + "km");
+
     }
 
     @Override
@@ -114,30 +115,32 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             tvQuantitySold = itemView.findViewById(R.id.tvQuantitySold);
             tvDistance = itemView.findViewById(R.id.tvDistance);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ShowAllProductsByMerchantActivity.class);
-                    Bundle bundle = new Bundle();
-                    Product item = list.get(getAdapterPosition());
+            //if (isReady) {
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, ShowAllProductsByMerchantActivity.class);
+                        Bundle bundle = new Bundle();
+                        Product item = list.get(getAdapterPosition());
 
-                    bundle.putBoolean("isShowBottomSheet", true);
-                    bundle.putString("id", item.id);
-                    bundle.putString("idUser", item.idUser);
-                    intent.putExtra("data", bundle);
-                    bundle.putString("img", item.img);
-                    bundle.putString("name", item.name);
-                    bundle.putString("desc", item.description);
-                    bundle.putDouble("discount", item.discount);
-                    if (item.discount > 0) {
-                        bundle.putDouble("price", item.price - item.price / 100 * item.discount);
-                    } else {
-                        bundle.putDouble("price", item.price);
+                        bundle.putBoolean("isShowBottomSheet", true);
+                        bundle.putString("id", item.id);
+                        bundle.putString("idMerchant", item.idUser);
+                        intent.putExtra("data", bundle);
+                        bundle.putString("img", item.img);
+                        bundle.putString("name", item.name);
+                        bundle.putString("desc", item.description);
+                        bundle.putDouble("discount", item.discount);
+                        if (item.discount > 0) {
+                            bundle.putDouble("price", item.price - item.price / 100 * item.discount);
+                        } else {
+                            bundle.putDouble("price", item.price);
+                        }
+                        intent.putExtra("data", bundle);
+                        context.startActivity(intent);
                     }
-                    intent.putExtra("data", bundle);
-                    context.startActivity(intent);
-                }
-            });
+                });
+            //}
 
         }
     }

@@ -202,6 +202,7 @@ public class HomeFragment extends Fragment implements OnBackPressed, Constant, S
                     bundle.putString("name", aListCate.get(i).name);
                     intent.putExtra("data-category", bundle);
                     startActivity(intent);
+                    isReady = true;
                 });
             }
 

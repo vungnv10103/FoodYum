@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -52,7 +53,7 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
     private TextView tvQuantity;
     private Button btnAddToCart;
 
-    private String idUser = "";
+    private String idMerchant = "";
     private String id = "";
 
     private Toolbar toolbar;
@@ -79,6 +80,8 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
         });
         fillData();
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String idUser = auth.getUid();
 
         String sPrice = tvNewPrice.getText().toString().trim();
         double priceOfOne = Double.parseDouble(sPrice.substring(0, sPrice.length() - 1));
@@ -121,27 +124,13 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
                 // ISO 8601 (format date)
 
                 Date currentTime = Calendar.getInstance().getTime();
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                SimpleDateFormat fm = new SimpleDateFormat();
-                fm.applyPattern("HH:mm:ss-z");
-                String time = fm.format(currentTime);
-                String date = df.format(currentTime);
-
-                // depends on the date and time (split)
-                String idOrder = date.replaceAll("-", "")
-                        + time.substring(0, time.indexOf("-")).replaceAll(":", "");
-
-//                OrderModel item = new OrderModel();
-//                item.id = idOrder + item.stt;
-//                item.idUser = idUser;
-//                item.dateTime = time;
-//                item.items =
 
                 double price = Double.parseDouble(btnAddToCart.getText().toString().trim().substring(6, btnAddToCart.getText().toString().trim().length() - 1));
                 String notes = edNote.getText().toString().trim();
                 ItemCart item = new ItemCart();
                 item.id = id;
                 item.name = tvNameProduct.getText().toString().trim();
+                item.idMerchant = idMerchant;
                 item.idUser = idUser;
                 item.dateTime = String.valueOf(currentTime);
                 item.quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
@@ -158,12 +147,13 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     }
+                    onBackPressed();
                 } else {
                     Toast.makeText(AddToCartActivity.this, ADD_FAIL, Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "insert local db cart fail");
                 }
 
-            isReady = true;
+                isReady = true;
             }
         });
 
@@ -223,7 +213,7 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
         processDialog.show();
         Bundle data = getIntent().getBundleExtra("data");
         if (data != null) {
-            idUser = data.getString("idUser");
+            idMerchant = data.getString("idMerchant");
             id = data.getString("id");
             double priceOfOne = data.getDouble("price");
             tvNameProduct.setText(data.getString("name"));
@@ -288,7 +278,7 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
 
     @Override
     public void onBackPressed() {
-        if (isReady){
+        if (isReady) {
             super.onBackPressed();
         }
     }

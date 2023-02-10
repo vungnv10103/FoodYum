@@ -98,6 +98,8 @@ public class LoginActivity extends AppCompatActivity implements Constant {
     private SpotsDialog progressDialog;
     GoogleSignInClient mGoogleSignInClient;
 
+    private ImageView imageView9;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -179,23 +181,23 @@ public class LoginActivity extends AppCompatActivity implements Constant {
             }
         });
 
-//        img.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ImagePicker.pickImage(LoginActivity.this, new ImagePicker.OnImagePickedListener() {
-//                    @Override
-//                    public void onImagePicked(Uri uri) {
-//                        img.setImageURI(uri);
-//                        // Get a reference to the storage location
-//                        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-//                        // Create a reference to the file to upload
-//                        StorageReference imageRef = storageRef.child("images/" + uri.getLastPathSegment().substring(6));
-////                        // Upload the file to the reference
-//                        UploadTask uploadTask = imageRef.putFile(uri);
-//                    }
-//                });
-//            }
-//        });
+        imageView9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImagePicker.pickImage(LoginActivity.this, new ImagePicker.OnImagePickedListener() {
+                    @Override
+                    public void onImagePicked(Uri uri) {
+                        imageView9.setImageURI(uri);
+                        // Get a reference to the storage location
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+                        // Create a reference to the file to upload
+                        StorageReference imageRef = storageRef.child("images_coupon/" + uri.getLastPathSegment().substring(6));
+//                        // Upload the file to the reference
+                        UploadTask uploadTask = imageRef.putFile(uri);
+                    }
+                });
+            }
+        });
 
         tvTitleApp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,8 +215,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog.show();
-                progressDialog.setCancelable(false);
+
                 String email = edEmail.getText().toString().trim();
                 String pass = edPass.getText().toString().trim();
                 login(email, pass);
@@ -235,7 +236,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
             @Override
             public void onClick(View v) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                String newPassword = "vung321";
+                String newPassword = "foodyum321";
 
                 assert user != null;
                 user.updatePassword(newPassword)
@@ -256,6 +257,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
 
     private void init() {
         textView4 = findViewById(R.id.textView4);
+        imageView9 = findViewById(R.id.imageView9);
         tvForgotPass = findViewById(R.id.tvForgotPass);
         btnLogin = findViewById(R.id.btnSignIn);
         edEmail = findViewById(R.id.edEmail);
@@ -305,6 +307,8 @@ public class LoginActivity extends AppCompatActivity implements Constant {
     }
 
     private void login(String email, String pass) {
+        progressDialog.show();
+        progressDialog.setCancelable(false);
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (validate(email, pass)) {
             if (checkEmail(email)) {
@@ -369,6 +373,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         itemUser.name = "";
         itemUser.phoneNumber = "";
         itemUser.searchHistory = "";
+        itemUser.favouriteRestaurant = "";
         itemUser.feedback = "";
         itemUser.coordinates = coordinate;
         itemUser.address = mLocation;
@@ -543,6 +548,9 @@ public class LoginActivity extends AppCompatActivity implements Constant {
     protected void onStart() {
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkChangeListener, intentFilter);
+
+        // auto login
+
         SharedPreferences pref = getSharedPreferences("USER_FILE", MODE_PRIVATE);
         if (pref != null) {
             boolean isSave = pref.getBoolean("REMEMBER", false);
@@ -551,9 +559,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                 String email = pref.getString("EMAIL", "");
                 String pass = pref.getString("PASSWORD", "");
                 login(email, pass);
-
             }
-
         }
         super.onStart();
     }

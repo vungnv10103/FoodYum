@@ -3,6 +3,7 @@ package vungnv.com.foodyum.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -16,6 +17,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -40,6 +43,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,10 +58,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
+import vungnv.com.foodyum.DAO.UsersDAO;
+import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.adapter.ItemProductsRecommendAdapter;
 import vungnv.com.foodyum.adapter.ListProductsAllDetailAdapter;
@@ -65,13 +72,13 @@ import vungnv.com.foodyum.model.ItemCart;
 import vungnv.com.foodyum.model.ListProduct;
 import vungnv.com.foodyum.model.Product;
 import vungnv.com.foodyum.model.ProductRecommend;
+import vungnv.com.foodyum.model.User;
 import vungnv.com.foodyum.utils.LocationProvider;
 import vungnv.com.foodyum.utils.NetworkChangeListener;
 
 
 public class ShowAllProductsByMerchantActivity extends AppCompatActivity implements Constant {
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private ImageButton  imgFavourite, imgSearch;
     private ImageView imgProduct, imgInfoDetail;
     private TextView tvNameRestaurant, tvDistance, tvAddress;
     private LinearLayout lnlInfoDetail;
@@ -88,9 +95,12 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
 
     private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
+    private String idMerchant = "";
     int temp = 0;
     private boolean isShowBottomSheet;
     private boolean isReady = false;
+
+    private UsersDAO usersDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +110,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
         init();
 
         customCollapsingToolbarLayout();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,36 +118,67 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                 onBackPressed();
             }
         });
+        toolbar.inflateMenu(R.menu.menu_tool_bar_cart);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @SuppressLint("NonConstantResourceId")
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                switch (id) {
+                    case R.id.action_favourite:
+                        temp++;
+                        if (temp % 2 != 0) {
+
+                            String email = Objects.requireNonNull(auth.getCurrentUser()).getEmail();
+                            addToFavourite(email, idMerchant, item);
+
+                        } else {
+                            item.setIcon(R.drawable.ic_favorite_border_white);
+                            Toast.makeText(ShowAllProductsByMerchantActivity.this, REMOVE_FAVOURITE, Toast.LENGTH_SHORT).show();
+                        }
+
+                        break;
+                    case R.id.action_search:
+                        Toast.makeText(ShowAllProductsByMerchantActivity.this, "search", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.action_cart:
+                        Intent intent = new Intent(ShowAllProductsByMerchantActivity.this, MainActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("screen", "cart");
+                        intent.putExtra("idScreen", bundle);
+                        startActivity(intent);
+                        finishAffinity();
+                }
+                return true;
+            }
+        });
+
         Bundle data = getIntent().getBundleExtra("data");
 
         if (data != null) {
-            isShowBottomSheet = data.getBoolean("isShowBottomSheet");
-            String idUser = data.getString("idUser");
-            //String idUser = "fGQRuHz9mrWKXdk4oJroyhOHxaR2";
-            getChildValue(tvNameRestaurant, idUser, "restaurantName");
-            getChildValue(tvAddress, idUser, "address");
-            getChildValue(tvDistance, idUser, "coordinates");
-            setImage(idUser);
 
-            getProductRecommend(idUser);
+            isShowBottomSheet = data.getBoolean("isShowBottomSheet");
+            idMerchant = data.getString("idMerchant");
+            Log.d(TAG, "id merchant: " + idMerchant);
+            //String idUser = "fGQRuHz9mrWKXdk4oJroyhOHxaR2";
+            getChildValue(tvNameRestaurant, idMerchant, "restaurantName");
+            getChildValue(tvAddress, idMerchant, "address");
+            getChildValue(tvDistance, idMerchant, "coordinates");
+            setImage(idMerchant);
+
+            getProductRecommend(idMerchant);
             //getAllProduct(idUser);
+//            String listRestaurantFavourite = usersDAO.getListRestaurantFavourite(Objects.requireNonNull(auth.getCurrentUser()).getEmail());
+//            String idMerchant[] = listRestaurantFavourite.split("-");
+//            for (int i = 0; i < idMerchant.length; i++) {
+//                if (idMerchant[i].equals(idMerchant)){
+//                    item.setIcon(R.drawable.ic_baseline_favorite_red);
+//                }
+//            }
+
+
         }
 
-
-        imgFavourite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // add to favourite
-                Toast.makeText(ShowAllProductsByMerchantActivity.this, "updating...", Toast.LENGTH_SHORT).show();
-            }
-        });
-        imgSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // enable search view
-                Toast.makeText(ShowAllProductsByMerchantActivity.this, "updating...", Toast.LENGTH_SHORT).show();
-            }
-        });
         imgInfoDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,8 +197,6 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
     private void init() {
         toolbar = findViewById(R.id.toolBarAllProduct);
         collapsingToolbarLayout = findViewById(R.id.collapsingToolBar);
-        imgFavourite = findViewById(R.id.imgFavourite);
-        imgSearch = findViewById(R.id.imgSearch);
         tvNameRestaurant = findViewById(R.id.tvNameRestaurant);
         tvDistance = findViewById(R.id.tvDistance);
         tvAddress = findViewById(R.id.tvAddress);
@@ -167,6 +207,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
         lnlInfoDetail = findViewById(R.id.lnlNameRestaurant);
         listProductsAdapter = new ListProductsAllDetailAdapter(getApplicationContext());
         processDialog = new SpotsDialog(ShowAllProductsByMerchantActivity.this, R.style.Custom);
+        usersDAO = new UsersDAO(getApplicationContext());
     }
 
 
@@ -231,6 +272,33 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
 
     }
 
+    private void addToFavourite(String email, String idMerchant, MenuItem item) {
+        String listRestaurantFavourite = usersDAO.getListRestaurantFavourite(email);
+        String de[] = listRestaurantFavourite.split("-");
+
+
+        int a = 0;
+        for (int i = 0; i < de.length; i++) {
+            if (de[i].equals(idMerchant)) {
+                a++;
+            }
+        }
+        if (a > 0) {
+            return;
+        }
+        User itemUser = new User();
+        itemUser.email = email;
+        if (listRestaurantFavourite.length() == 0) {
+            itemUser.favouriteRestaurant = listRestaurantFavourite+ idMerchant;
+        } else {
+            itemUser.favouriteRestaurant = listRestaurantFavourite +"-" + idMerchant;
+        }
+        if (usersDAO.updateListRestaurantFavourite(itemUser) > 0) {
+            Toast.makeText(ShowAllProductsByMerchantActivity.this, ADD_FAVOURITE, Toast.LENGTH_SHORT).show();
+            item.setIcon(R.drawable.ic_baseline_favorite_red);
+        }
+    }
+
     private void askPermission() {
         ActivityCompat.requestPermissions(ShowAllProductsByMerchantActivity.this, new String[]
                 {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
@@ -285,6 +353,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
 
                 if (paramStr.equals("restaurantName")) {
                     collapsingToolbarLayout.setTitle(value);
+                    tvNameRestaurant.setText(value);
                 } else if (paramStr.equals("coordinates")) {
                     assert value != null;
                     if (value.length() == 0) {
@@ -428,6 +497,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
         }
     }
 
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onStart() {
@@ -441,6 +511,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
             return;
         }
         ItemCartDAO itemCartDAO = new ItemCartDAO(getApplicationContext());
+        FirebaseAuth auth = FirebaseAuth.getInstance();
 
 
         Dialog dialog = new Dialog(ShowAllProductsByMerchantActivity.this);
@@ -464,18 +535,19 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
         Button btnAddToCart = dialog.findViewById(R.id.btnAddToCart);
 
 
-        String idUser = data.getString("idUser");
+        String idMerchant = data.getString("idMerchant");
         String id = data.getString("id");
+        Log.d(TAG, "id product: " + id);
         double sPriceOfOne = data.getDouble("price");
         double discount = data.getDouble("discount");
         tvNameProduct.setText(data.getString("name"));
         tvNewPrice.setText(sPriceOfOne + "đ");
         tvDescription.setText(data.getString("desc"));
-        setImageProduct(idUser, data.getString("img"), imgProduct);
+        setImageProduct(idMerchant, data.getString("img"), imgProduct);
         btnAddToCart.setText("Thêm • " + sPriceOfOne + "đ");
 
         tvOldPrice.setText(sPriceOfOne / (1 - discount / 100) + "đ");
-        if (discount == 0){
+        if (discount == 0) {
             tvOldPrice.setVisibility(View.INVISIBLE);
         }
         tvOldPrice.setPaintFlags(tvOldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -526,7 +598,8 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                 ItemCart item = new ItemCart();
                 item.id = id;
                 item.name = tvNameProduct.getText().toString().trim();
-                item.idUser = idUser;
+                item.idUser = auth.getUid();
+                item.idMerchant = idMerchant;
                 item.dateTime = String.valueOf(currentTime);
                 item.quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
                 item.status = 1;
@@ -573,7 +646,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
 
     @Override
     public void onBackPressed() {
-        if (isReady){
+        if (isReady) {
             super.onBackPressed();
         }
     }

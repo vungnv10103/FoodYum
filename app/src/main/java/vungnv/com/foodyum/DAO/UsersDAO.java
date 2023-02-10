@@ -30,6 +30,7 @@ public class UsersDAO {
         values.put("pass", obj.pass);
         values.put("phoneNumber", obj.phoneNumber);
         values.put("searchHistory", obj.searchHistory);
+        values.put("favouriteRestaurant", obj.favouriteRestaurant);
         values.put("address", obj.address);
         values.put("coordinates", obj.coordinates);
         values.put("feedback", obj.feedback);
@@ -38,7 +39,7 @@ public class UsersDAO {
     }
 
 
-    public int updateProfile( User obj) {
+    public int updateProfile(User obj) {
         ContentValues values = new ContentValues();
         values.put("name", obj.name);
         values.put("phoneNumber", obj.phoneNumber);
@@ -46,7 +47,8 @@ public class UsersDAO {
 
         return db.update("User", values, "email=?", new String[]{obj.email});
     }
-    public int updateAll( User obj) {
+
+    public int updateAll(User obj) {
         ContentValues values = new ContentValues();
         values.put("img", obj.img);
         values.put("name", obj.name);
@@ -69,11 +71,14 @@ public class UsersDAO {
         values.put("feedback", obj.feedback);
         return db.update("User", values, "email=?", new String[]{obj.email});
     }
-    public int updatePass(User obj){
+
+    public int updatePass(User obj) {
         ContentValues values = new ContentValues();
         values.put("pass", obj.pass);
         return db.update("User", values, "email=?", new String[]{obj.email});
+
     }
+
     public int updateSearchHistory(User obj) {
         ContentValues values = new ContentValues();
         values.put("searchHistory", obj.searchHistory);
@@ -85,26 +90,50 @@ public class UsersDAO {
         List<User> list = getData(sql, email);
         return list.get(0).searchHistory;
     }
+
     public String getNameUser(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
         return list.get(0).name;
     }
+
     public String getPhone(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
         return list.get(0).phoneNumber;
     }
+
     public String getAddress(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
         return list.get(0).address;
     }
+
     public String getFeedback(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
         return list.get(0).feedback;
     }
+
+    public String getListRestaurantFavourite(String email) {
+        String sql = "SELECT * FROM User WHERE email=?";
+        List<User> list = getData(sql, email);
+        return list.get(0).favouriteRestaurant;
+    }
+
+    public int updateListRestaurantFavourite(User obj) {
+        ContentValues values = new ContentValues();
+        values.put("favouriteRestaurant", obj.favouriteRestaurant);
+        return db.update("User", values, "email=?", new String[]{obj.email});
+    }
+
+    public long updateListRestaurantFavouritePro(User obj) {
+        ContentValues values = new ContentValues();
+        values.put("favouriteRestaurant", obj.favouriteRestaurant);
+        return db.replace("User", null, values);
+    }
+
+
     public String autoFillPassWord(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
@@ -114,11 +143,12 @@ public class UsersDAO {
     public String getUriImg(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
-        if (list.size() != 0){
+        if (list.size() != 0) {
             return list.get(0).img;
         }
-       return "";
+        return "";
     }
+
     public String getIDUser(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
@@ -140,6 +170,7 @@ public class UsersDAO {
         String sql = "SELECT * FROM User";
         return getData(sql);
     }
+
     public List<User> getALLByEmail(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         return getData(sql, email);
@@ -161,6 +192,7 @@ public class UsersDAO {
             obj.phoneNumber = cursor.getString(cursor.getColumnIndex("phoneNumber"));
             obj.address = cursor.getString(cursor.getColumnIndex("address"));
             obj.searchHistory = cursor.getString(cursor.getColumnIndex("searchHistory"));
+            obj.favouriteRestaurant = cursor.getString(cursor.getColumnIndex("favouriteRestaurant"));
             obj.coordinates = cursor.getString(cursor.getColumnIndex("coordinates"));
             obj.feedback = cursor.getString(cursor.getColumnIndex("feedback"));
 
@@ -170,10 +202,11 @@ public class UsersDAO {
         return list;
 
     }
+
     // check login in sqlite
-    public boolean checkAccountExist(String email, String pass){
+    public boolean checkAccountExist(String email, String pass) {
         String sql = "SELECT * FROM User WHERE email=? AND pass=?";
-        List<User> list = getData(sql,email,pass);
+        List<User> list = getData(sql, email, pass);
         return list.size() != 0;
 
     }

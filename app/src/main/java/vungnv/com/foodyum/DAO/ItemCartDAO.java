@@ -29,6 +29,7 @@ public class ItemCartDAO {
         values.put("id", obj.id);
         values.put("name", obj.name);
         values.put("idUser", obj.idUser);
+        values.put("idMerchant", obj.idMerchant);
         values.put("dateTime", obj.dateTime);
         values.put("quantity", obj.quantity);
         values.put("status", obj.status);
@@ -43,12 +44,15 @@ public class ItemCartDAO {
         values.put("status", obj.status);
 
         return db.update("Cart", values, "id=?", new String[]{obj.id});
-    } public int updateQuantity(@NonNull ItemCart obj) {
+    }
+
+    public int updateQuantity(@NonNull ItemCart obj) {
         ContentValues values = new ContentValues();
         values.put("quantity", obj.quantity);
 
         return db.update("Cart", values, "id=?", new String[]{obj.id});
     }
+
     public int updatePrice(@NonNull ItemCart obj) {
         ContentValues values = new ContentValues();
         values.put("price", obj.price);
@@ -57,15 +61,15 @@ public class ItemCartDAO {
     }
 
 
-    public List<ItemCart> getALL(int status) {
-        String sql = "SELECT * FROM Cart WHERE status=?";
-        return getData(sql, String.valueOf(status));
+    public List<ItemCart> getALL(String idUser, int status) {
+        String sql = "SELECT * FROM Cart WHERE idUser=? AND status=?";
+        return getData(sql, idUser, String.valueOf(status));
     }
 
 
-    public List<ItemCart> getALLDefault() {
-        String sql = "SELECT * FROM Cart";
-        return getData(sql);
+    public List<ItemCart> getALL(String idUser) {
+        String sql = "SELECT * FROM Cart WHERE idUser=?";
+        return getData(sql, idUser);
     }
 
     public List<ItemCart> getALLBestSellingByType(String type) {
@@ -84,6 +88,7 @@ public class ItemCartDAO {
             obj.id = cursor.getString(cursor.getColumnIndex("id"));
             obj.name = cursor.getString(cursor.getColumnIndex("name"));
             obj.idUser = cursor.getString(cursor.getColumnIndex("idUser"));
+            obj.idMerchant = cursor.getString(cursor.getColumnIndex("idMerchant"));
             obj.dateTime = cursor.getString(cursor.getColumnIndex("dateTime"));
             obj.quantity = Integer.parseInt(cursor.getString(cursor.getColumnIndex("quantity")));
             obj.status = Integer.parseInt(cursor.getString(cursor.getColumnIndex("status")));
