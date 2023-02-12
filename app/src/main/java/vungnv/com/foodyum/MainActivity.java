@@ -9,10 +9,13 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
@@ -44,17 +47,35 @@ public class MainActivity extends AppCompatActivity implements Constant {
         //mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupWithNavController(binding.navView, navController);
 
         Bundle data = getIntent().getBundleExtra("idScreen");
         if (data != null) {
             String idScreen = data.getString("screen");
             if (idScreen.equals("cart")) {
                 navController.navigate(R.id.navigation_cart);
-                NavigationUI.setupWithNavController(binding.navView, navController);
             }
         }
+        NavigationUI.setupWithNavController(binding.navView, navController);
+
+        binding.navView.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.navigation_home) {
+                navController.navigate(R.id.navigation_home);
+                return true;
+            }
+            if (item.getItemId() == R.id.navigation_cart) {
+                navController.navigate(R.id.navigation_cart);
+                return true;
+            }
+            if (item.getItemId() == R.id.navigation_account) {
+                navController.navigate(R.id.navigation_account);
+                return true;
+            }
+            return false;
+        });
+
+
 
 
     }

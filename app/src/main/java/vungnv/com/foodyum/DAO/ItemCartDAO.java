@@ -71,6 +71,10 @@ public class ItemCartDAO {
         String sql = "SELECT * FROM Cart WHERE idUser=?";
         return getData(sql, idUser);
     }
+    public List<ItemCart> getALLByIdMerchant(String idMerchant, int status) {
+        String sql = "SELECT * FROM Cart WHERE idMerchant=? AND status=?";
+        return getData(sql, idMerchant, String.valueOf(status));
+    }
 
     public List<ItemCart> getALLBestSellingByType(String type) {
         String sql = "SELECT * FROM Cart WHERE type=? ORDER BY quantity_sold DESC";

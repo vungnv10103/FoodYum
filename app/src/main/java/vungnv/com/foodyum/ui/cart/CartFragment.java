@@ -86,17 +86,21 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String idUser = auth.getUid();
 
-       // listCart(idUser);
+        // listCart(idUser);
         refresh(idUser);
 
         btnCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String result = btnCheckout.getText().toString().trim();
+                if (result.equals("Thanh Toán")){
+                    return;
+                }
                 int quantity = Integer.parseInt(result.substring(0, result.indexOf(" ")));
-               // Log.d(TAG, "onClick: "+ quantity);
 
-                if (quantity == 0){
+                // Log.d(TAG, "onClick: "+ quantity);
+
+                if (quantity == 0) {
                     Toast.makeText(getContext(), NO_CHOOSE, Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -145,6 +149,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
             @Override
             public void run() {
                 while (true) {
+                    final int[] temp = {0};
                     listCart = itemCartDAO.getALL(idUser, 2);
                     double totalPrice = 0;
                     int totalQuantity = 0;
@@ -159,7 +164,12 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                             listCart = itemCartDAO.getALL(idUser);
                             if (listCart.size() == 0) {
                                 isReady = true;
+                                CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
+                                rcv_cart.setAdapter(cartAdapter);
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+                                rcv_cart.setLayoutManager(linearLayoutManager);
                                 Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
+                                temp[0]++;
                                 return;
                             }
                             CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
@@ -167,6 +177,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
                             rcv_cart.setLayoutManager(linearLayoutManager);
                             btnCheckout.setText(resultButton);
+                            isReady = true;
                         }
                     });
                     try {
@@ -174,6 +185,10 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    if (temp[0] > 0) {
+                        break;
+                    }
+
                 }
             }
         };

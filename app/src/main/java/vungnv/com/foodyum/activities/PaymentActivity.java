@@ -40,6 +40,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
@@ -79,6 +81,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
     private double fee = 0;
 
     private String valueContext = "";
+    private int count = 0;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -116,6 +119,11 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         tvFeeDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String valuePrice = tvTotalPrice.getText().toString().trim();
+                double totalPrice = Double.parseDouble(valuePrice.substring(0, valuePrice.length() - 1));
+                if (totalPrice == 0) {
+                    return;
+                }
                 double service = 2000;
                 Dialog dialog = new Dialog(PaymentActivity.this);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -181,15 +189,30 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                 // depends on the date and time (split)
                 String idOrder = date.replaceAll("-", "")
                         + time.substring(0, time.indexOf("-")).replaceAll(":", "");
+//                pushOrder(idOrder, idUser, listOrder.get(i).idMerchant, currentTime.toString(),
+//                        listOrder.get(i).name, listOrder.get(i).quantity, 1, listOrder.get(i).price, listOrder.get(i).notes);
+
+                String idMerchant = "";
+                List<ItemCart> listOrderByIdMerchant = null;
                 for (int i = 0; i < listOrder.size(); i++) {
-                    pushOrder(idOrder, idUser, listOrder.get(i).idMerchant, currentTime.toString(),
-                            listOrder.get(i).name, listOrder.get(i).quantity, 1, listOrder.get(i).price, listOrder.get(i).notes);
+                    idMerchant = listOrder.get(i).idMerchant;
+                    listOrderByIdMerchant = itemCartDAO.getALLByIdMerchant(idMerchant, 2);
+
+                }
+                // true for 1 idMerchant at a time (>2 id in cart => error)
+                if (listOrderByIdMerchant != null) {
+                    for (int j = 0; j < listOrderByIdMerchant.size(); j++) {
+                        pushOrder(idOrder, idUser, idMerchant, currentTime.toString(), listOrderByIdMerchant.get(j).name, listOrderByIdMerchant.get(j).quantity
+                                , 1, listOrderByIdMerchant.get(j).price, listOrderByIdMerchant.get(j).notes
+                        );
+                    }
                 }
 
 
             }
         });
     }
+
 
     private void init() {
         toolbar = findViewById(R.id.toolBarPayment);
@@ -217,40 +240,35 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
 
     private void pushOrder(String id, String idUser, String idMerchant, String dateTime,
                            String item, int quantity, int status, double price, String notes) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
+        ref.runTransaction(new Transaction.Handler() {
+            @NonNull
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                long childCount = dataSnapshot.getChildrenCount();
-                int index = (int) (childCount + 1);
-                Order user = new Order(id, idUser, dateTime, item, quantity, status, price, notes);
-                Map<String, Object> mListOrder = user.toMap();
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference reference = database.getReference();
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("list_order/" + idMerchant + "/" + childCount, mListOrder);
-                reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                        Toast.makeText(PaymentActivity.this, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                long childCount = currentData.getChildrenCount();
+                Order order = new Order(id, idUser, dateTime, item, quantity, status, price, notes);
+                Map<String, Object> mListOrder = order.toMap();
+                currentData.child(String.valueOf(childCount)).setValue(mListOrder);
+                return Transaction.success(currentData);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle error
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                if (error != null) {
+                    Toast.makeText(PaymentActivity.this, "Transaction failed.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(PaymentActivity.this, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
     }
 
+
     private void askPermission() {
         ActivityCompat.requestPermissions(PaymentActivity.this, new String[]
                 {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
     }
-
 
     private void refreshAddress(FirebaseAuth auth) {
         Thread t1 = new Thread() {
@@ -387,11 +405,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d(TAG, "onCancelled: " + error.getMessage());
             }
         });
     }
-
 
     @Override
     public void onBackPressed() {

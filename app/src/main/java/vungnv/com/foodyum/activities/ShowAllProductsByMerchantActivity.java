@@ -148,6 +148,9 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                         intent.putExtra("idScreen", bundle);
                         startActivity(intent);
                         finishAffinity();
+//                        Toast.makeText(ShowAllProductsByMerchantActivity.this, "updating...", Toast.LENGTH_SHORT).show();
+//                        startActivity(new Intent(ShowAllProductsByMerchantActivity.this, MainActivity.class));
+//                        finishAffinity();
                 }
                 return true;
             }
