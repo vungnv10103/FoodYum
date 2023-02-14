@@ -13,7 +13,6 @@ import java.util.List;
 
 import vungnv.com.foodyum.database.DbCart;
 import vungnv.com.foodyum.model.ItemCart;
-import vungnv.com.foodyum.model.User;
 
 
 public class ItemCartDAO {
@@ -39,22 +38,43 @@ public class ItemCartDAO {
         return db.insert("Cart", null, values);
     }
 
+    public void deleteCart() {
+        db.execSQL("delete from Cart");
+    }
+
     public int updateStatus(@NonNull ItemCart obj) {
         ContentValues values = new ContentValues();
         values.put("status", obj.status);
 
         return db.update("Cart", values, "id=?", new String[]{obj.id});
     }
-
-    public int updateQuantity(@NonNull ItemCart obj) {
+    public int updateStatusWithStt(@NonNull ItemCart obj) {
         ContentValues values = new ContentValues();
-        values.put("quantity", obj.quantity);
+        values.put("status", obj.status);
 
-        return db.update("Cart", values, "id=?", new String[]{obj.id});
+        return db.update("Cart", values, "stt=?", new String[]{String.valueOf(obj.stt)});
+    }
+    public int getCurrentStatus(String id) {
+        String sql = "SELECT * FROM Cart WHERE id=?";
+        List<ItemCart> list = getData(sql, id);
+        return list.get(0).status;
     }
 
-    public int updatePrice(@NonNull ItemCart obj) {
+
+    public int getCurrentQuantity(String id) {
+        String sql = "SELECT * FROM Cart WHERE id=?";
+        List<ItemCart> list = getData(sql, id);
+        return list.get(0).quantity;
+    }
+    public double getCurrentPrice(String id) {
+        String sql = "SELECT * FROM Cart WHERE id=?";
+        List<ItemCart> list = getData(sql, id);
+        return list.get(0).price;
+    }
+
+    public int updateQuantityAPrice(@NonNull ItemCart obj) {
         ContentValues values = new ContentValues();
+        values.put("quantity", obj.quantity);
         values.put("price", obj.price);
 
         return db.update("Cart", values, "id=?", new String[]{obj.id});
@@ -65,12 +85,17 @@ public class ItemCartDAO {
         String sql = "SELECT * FROM Cart WHERE idUser=? AND status=?";
         return getData(sql, idUser, String.valueOf(status));
     }
+    public List<ItemCart> getALL(String idUser, int status1, int status2) {
+        String sql = "SELECT * FROM Cart WHERE idUser=? AND status BETWEEN ? and ?";
+        return getData(sql, idUser, String.valueOf(status1), String.valueOf(status2));
+    }
 
 
     public List<ItemCart> getALL(String idUser) {
         String sql = "SELECT * FROM Cart WHERE idUser=?";
         return getData(sql, idUser);
     }
+
     public List<ItemCart> getALLByIdMerchant(String idMerchant, int status) {
         String sql = "SELECT * FROM Cart WHERE idMerchant=? AND status=?";
         return getData(sql, idMerchant, String.valueOf(status));

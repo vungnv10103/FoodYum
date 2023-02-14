@@ -58,14 +58,14 @@ public class OrderDAO {
         @SuppressLint("Recycle") Cursor cursor = db.rawQuery(sql, selectionArgs);
         while (cursor.moveToNext()) {
             Order obj = new Order();
-            obj.stt = Integer.parseInt(cursor.getString(cursor.getColumnIndex("stt")));
+            obj.pos = Integer.parseInt(cursor.getString(cursor.getColumnIndex("pos")));
             obj.id = cursor.getString(cursor.getColumnIndex("id"));
             obj.idUser = cursor.getString(cursor.getColumnIndex("idUser"));
             obj.idMerchant = cursor.getString(cursor.getColumnIndex("idMerchant"));
             obj.dateTime = cursor.getString(cursor.getColumnIndex("dateTime"));
             obj.items = cursor.getString(cursor.getColumnIndex("items"));
             obj.status = Integer.parseInt(cursor.getString(cursor.getColumnIndex("status")));
-            obj.price = Double.valueOf(cursor.getString(cursor.getColumnIndex("price")));
+            obj.price = Double.parseDouble(cursor.getString(cursor.getColumnIndex("price")));
             obj.notes = cursor.getString(cursor.getColumnIndex("notes"));
 
             list.add(obj);

@@ -31,7 +31,9 @@ public interface Constant {
     String CART_EMPTY = "Giỏ hàng trống !";
     String NO_CHOOSE = "Chưa có sản phẩm nào được chọn !";
     String ORDER_SUCCESS = "Đặt hàng thành công !";
+    String ORDER_FAIL = "Đặt hàng thất bại !";
     String ADD_FAVOURITE = "Đã thêm vào yêu thích !";
     String REMOVE_FAVOURITE = "Đã bỏ khỏi yêu thích !";
+    String UPDATE_QUANTITY = "Cập nhật số lượng thành công !";
 
 }

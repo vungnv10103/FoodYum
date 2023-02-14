@@ -1,6 +1,7 @@
 package vungnv.com.foodyum.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.model.ListProduct;
 
-public class ListProductsAllDetailAdapter extends RecyclerView.Adapter<ListProductsAllDetailAdapter.ProductViewHolder>  {
+public class ListProductsAllDetailAdapter extends RecyclerView.Adapter<ListProductsAllDetailAdapter.ProductViewHolder> {
 
     private final Context context;
     private ArrayList<ListProduct> list;
@@ -25,8 +26,9 @@ public class ListProductsAllDetailAdapter extends RecyclerView.Adapter<ListProdu
     public ListProductsAllDetailAdapter(Context context) {
         this.context = context;
     }
+
     @SuppressLint("NotifyDataSetChanged")
-    public void setData(ArrayList<ListProduct> list){
+    public void setData(ArrayList<ListProduct> list) {
         this.list = list;
         notifyDataSetChanged();
     }
@@ -34,30 +36,32 @@ public class ListProductsAllDetailAdapter extends RecyclerView.Adapter<ListProdu
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_product, parent , false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_product, parent, false);
         return new ProductViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        ListProduct item = list.get(position);
-        if (item == null){
-            return;
-        }
-        holder.tvTitle.setText(item.getNameProduct());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
-        holder.rcvProduct.setLayoutManager(linearLayoutManager);
+        if (context != null && context instanceof Activity && !((Activity) context).isFinishing()) {
+            ListProduct item = list.get(position);
+            if (item == null) {
+                return;
+            }
+            holder.tvTitle.setText(item.getNameProduct());
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+            holder.rcvProduct.setLayoutManager(linearLayoutManager);
 
-        ItemProductsAllDetailAdapter itemProductAdapter = new ItemProductsAllDetailAdapter(context);
-        itemProductAdapter.setData(item.getList());
-        holder.rcvProduct.setAdapter(itemProductAdapter);
+            ItemProductsAllDetailAdapter itemProductAdapter = new ItemProductsAllDetailAdapter(context);
+            itemProductAdapter.setData(item.getList());
+            holder.rcvProduct.setAdapter(itemProductAdapter);
+        }
 
 
     }
 
     @Override
     public int getItemCount() {
-        if (list != null){
+        if (list != null) {
             return list.size();
         }
         return 0;

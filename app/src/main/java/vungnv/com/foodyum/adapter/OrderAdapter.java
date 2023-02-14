@@ -1,6 +1,7 @@
 package vungnv.com.foodyum.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,25 +60,29 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                 boolean isSelected = holder.cbCheck.isChecked();
                 ItemCart item1 = new ItemCart();
                 item1.id = item.id;
-                if (isSelected) {
-                    item1.status = 2;
-                    if (itemCartDAO.updateStatus(item1) > 0) {
-                        Log.d(TAG, "update status 1 -> 2 success");
+                int currentStatus = itemCartDAO.getCurrentStatus(item.id);
+                if (currentStatus != 0) {
+                    if (isSelected) {
+                        item1.status = 2;
+                        if (itemCartDAO.updateStatus(item1) > 0) {
+                            Log.d(TAG, "update status 1 -> 2 success");
+                        } else {
+                            Log.d(TAG, "error update status");
+                        }
                     } else {
-                        Log.d(TAG, "error update status");
-                    }
-                } else {
-                    item1.status = 1;
-                    if (itemCartDAO.updateStatus(item1) > 0) {
-                        Log.d(TAG, "update status 2 -> 1 success");
-                    } else {
-                        Log.d(TAG, "error update status");
+                        item1.status = 1;
+                        if (itemCartDAO.updateStatus(item1) > 0) {
+                            Log.d(TAG, "update status 2 -> 1 success");
+                        } else {
+                            Log.d(TAG, "error update status");
+                        }
                     }
                 }
+
             }
         });
-
     }
+
 
     @Override
     public int getItemCount() {

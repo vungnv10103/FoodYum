@@ -3,6 +3,7 @@ package vungnv.com.foodyum.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -162,7 +164,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
 
             isShowBottomSheet = data.getBoolean("isShowBottomSheet");
             idMerchant = data.getString("idMerchant");
-            Log.d(TAG, "id merchant: " + idMerchant);
+            //Log.d (TAG, "id merchant: " + idMerchant);
             //String idUser = "fGQRuHz9mrWKXdk4oJroyhOHxaR2";
             getChildValue(tvNameRestaurant, idMerchant, "restaurantName");
             getChildValue(tvAddress, idMerchant, "address");
@@ -277,12 +279,12 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
 
     private void addToFavourite(String email, String idMerchant, MenuItem item) {
         String listRestaurantFavourite = usersDAO.getListRestaurantFavourite(email);
-        String de[] = listRestaurantFavourite.split("-");
+        String[] de = listRestaurantFavourite.split("-");
 
 
         int a = 0;
-        for (int i = 0; i < de.length; i++) {
-            if (de[i].equals(idMerchant)) {
+        for (String s : de) {
+            if (s.equals(idMerchant)) {
                 a++;
             }
         }
@@ -292,9 +294,9 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
         User itemUser = new User();
         itemUser.email = email;
         if (listRestaurantFavourite.length() == 0) {
-            itemUser.favouriteRestaurant = listRestaurantFavourite+ idMerchant;
+            itemUser.favouriteRestaurant = listRestaurantFavourite + idMerchant;
         } else {
-            itemUser.favouriteRestaurant = listRestaurantFavourite +"-" + idMerchant;
+            itemUser.favouriteRestaurant = listRestaurantFavourite + "-" + idMerchant;
         }
         if (usersDAO.updateListRestaurantFavourite(itemUser) > 0) {
             Toast.makeText(ShowAllProductsByMerchantActivity.this, ADD_FAVOURITE, Toast.LENGTH_SHORT).show();
@@ -327,7 +329,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                             float distanceInMeters = results[0];
                             float distanceInKilometers = distanceInMeters / 1000;
                             textView.setText(String.format("%.1f", distanceInKilometers) + "km");
-                            Log.d(TAG, "distance: " + String.format("%.1f", distanceInMeters / 1000) + "km");
+                            // Log.d(TAG, "distance: " + String.format("%.1f", distanceInMeters / 1000) + "km");
                             processDialog.dismiss();
 
                         } catch (IOException e) {
@@ -364,8 +366,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                     }
                     double merchantLongitude = Double.parseDouble(value.substring(0, value.indexOf("-")));
                     double merchantLatitude = Double.parseDouble(value.substring(value.indexOf("-") + 1, value.length()));
-                    Log.d(TAG, "long: " + merchantLongitude);
-                    Log.d(TAG, "la: " + merchantLatitude);
+                    Log.d(TAG, "merchant 'coordinates: " + merchantLongitude + "-" + merchantLatitude);
                     getLastLocation(merchantLongitude, merchantLatitude, textView);
 
                 } else {
@@ -540,7 +541,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
 
         String idMerchant = data.getString("idMerchant");
         String id = data.getString("id");
-        Log.d(TAG, "id product: " + id);
+        //Log.d(TAG, "id product: " + id);
         double sPriceOfOne = data.getDouble("price");
         double discount = data.getDouble("discount");
         tvNameProduct.setText(data.getString("name"));
@@ -594,29 +595,63 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
             @Override
             public void onClick(View v) {
                 // ISO 8601 (format date)
+                List<ItemCart> listCart = itemCartDAO.getALL(auth.getUid(), 1, 2);
 
                 Date currentTime = Calendar.getInstance().getTime();
                 double price = Double.parseDouble(btnAddToCart.getText().toString().trim().substring(6, btnAddToCart.getText().toString().trim().length() - 1));
                 String notes = edNote.getText().toString().trim();
-                ItemCart item = new ItemCart();
-                item.id = id;
-                item.name = tvNameProduct.getText().toString().trim();
-                item.idUser = auth.getUid();
-                item.idMerchant = idMerchant;
-                item.dateTime = String.valueOf(currentTime);
-                item.quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
-                item.status = 1;
-                item.price = price;
-                item.notes = notes;
+                String nameProduct = tvNameProduct.getText().toString().trim();
+                int quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
 
+                int temp = 0;
+                for (int i = 0; i < listCart.size(); i++) {
+                    if (listCart.get(i).id.equals(id)) {
+                        temp++;
+                    }
+                }
+                // check Exist
+                if (temp > 0) {
+                    int currentQuantity = itemCartDAO.getCurrentQuantity(id);
+                    double currentPrice = itemCartDAO.getCurrentPrice(id);
+                    int newQuantity = currentQuantity + quantity;
+                    double newPrice = currentPrice / currentQuantity * newQuantity;
+                    ItemCart item1 = new ItemCart();
+                    item1.id = id;
+                    item1.quantity = newQuantity;
+                    item1.price = newPrice;
 
-                if (itemCartDAO.insert(item) > 0) {
-                    Log.d(TAG, "insert local db cart success");
-                    dialog.dismiss();
-                    Toast.makeText(ShowAllProductsByMerchantActivity.this, ADD_SUCCESS, Toast.LENGTH_SHORT).show();
+                    if (itemCartDAO.updateQuantityAPrice(item1) > 0) {
+                        Log.d(TAG, "update quantity success");
+                        Toast.makeText(ShowAllProductsByMerchantActivity.this, UPDATE_QUANTITY, Toast.LENGTH_SHORT).show();
+                    }
+                    isReady = true;
                 } else {
-                    Toast.makeText(ShowAllProductsByMerchantActivity.this, ADD_FAIL, Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "insert local db cart fail");
+
+                    ItemCart item = new ItemCart();
+                    item.id = id;
+                    item.name = nameProduct;
+                    item.idMerchant = idMerchant;
+                    item.idUser = auth.getUid();
+                    item.dateTime = String.valueOf(currentTime);
+                    item.quantity = quantity;
+                    item.status = 1;
+                    item.price = price;
+                    item.notes = notes;
+
+                    if (itemCartDAO.insert(item) > 0) {
+                        Log.d(TAG, "insert local db cart success");
+                        Toast.makeText(ShowAllProductsByMerchantActivity.this, ADD_SUCCESS, Toast.LENGTH_SHORT).show();
+                        View view = ShowAllProductsByMerchantActivity.this.getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+                    } else {
+                        Toast.makeText(ShowAllProductsByMerchantActivity.this, ADD_FAIL, Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "insert local db cart fail");
+                    }
+
+                    isReady = true;
                 }
 
             }

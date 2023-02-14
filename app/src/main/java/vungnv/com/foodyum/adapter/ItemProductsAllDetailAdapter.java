@@ -1,6 +1,7 @@
 package vungnv.com.foodyum.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -63,44 +64,46 @@ public class ItemProductsAllDetailAdapter extends RecyclerView.Adapter<ItemProdu
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        Product item = list.get(position);
+        if (context instanceof Activity && !((Activity) context).isFinishing()) {
+            Product item = list.get(position);
 
-        String idImage = item.img;
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        storageRef.child("images_product/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // Got the download URL
-                // Load the image using Glide
-                Glide.with(context)
-                        .load(uri)
-                        .into(holder.img);
+            String idImage = item.img;
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            storageRef.child("images_product/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL
+                    // Load the image using Glide
+                    Glide.with(context)
+                            .load(uri)
+                            .into(holder.img);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                    Log.d(TAG, "get image from firebase: " + exception.getMessage());
+                }
+            });
+            holder.tvTitle.setText(item.name);
+            double discount = item.discount;
+            double oldPrice = item.price;
+
+            double newPrice = oldPrice - oldPrice / 100 * discount;
+            if (discount == 0) {
+                holder.tvDiscount.setVisibility(View.INVISIBLE);
+                holder.tvPriceOld.setVisibility(View.INVISIBLE);
+                holder.tvPriceNew.setText(item.price + "đ");
+            } else {
+                holder.tvDiscount.setText(discount + "%");
+                holder.tvPriceOld.setText(oldPrice + "đ");
+                holder.tvDiscount.setVisibility(View.VISIBLE);
+                holder.tvPriceOld.setVisibility(View.VISIBLE);
+
+                holder.tvPriceOld.setPaintFlags(holder.tvPriceOld.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                holder.tvPriceNew.setText(item.price - item.price * discount / 100 + "đ");
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                Log.d(TAG, "get image from firebase: " + exception.getMessage());
-            }
-        });
-        holder.tvTitle.setText(item.name);
-        double discount = item.discount;
-        double oldPrice = item.price;
-
-        double newPrice = oldPrice - oldPrice /100 * discount;
-        if (discount ==0){
-            holder.tvDiscount.setVisibility(View.INVISIBLE);
-            holder.tvPriceOld.setVisibility(View.INVISIBLE);
-            holder.tvPriceNew.setText(item.price + "đ");
-        }else {
-            holder.tvDiscount.setText(discount +"%");
-            holder.tvPriceOld.setText(oldPrice + "đ");
-            holder.tvDiscount.setVisibility(View.VISIBLE);
-            holder.tvPriceOld.setVisibility(View.VISIBLE);
-
-            holder.tvPriceOld.setPaintFlags(holder.tvPriceOld.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.tvPriceNew.setText(item.price - item.price * discount /100 + "đ");
         }
 
 
