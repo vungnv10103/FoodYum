@@ -88,12 +88,13 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
 
         // listCart(idUser);
         refresh(idUser);
+        refreshButton(idUser);
 
         btnCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String result = btnCheckout.getText().toString().trim();
-                if (result.equals("Thanh Toán")){
+                if (result.equals("Thanh Toán")) {
                     return;
                 }
                 int quantity = Integer.parseInt(result.substring(0, result.indexOf(" ")));
@@ -143,16 +144,16 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
 
     }
 
-    public void refresh(String idUser) {
+    public void refreshButton(String idUser) {
         Thread t1 = new Thread() {
             @SuppressLint("SetTextI18n")
             @Override
             public void run() {
                 while (true) {
-                    final int[] temp = {0};
                     listCart = itemCartDAO.getALL(idUser, 2);
                     double totalPrice = 0;
                     int totalQuantity = 0;
+
                     for (int i = 0; i < listCart.size(); i++) {
                         totalQuantity += listCart.get(i).quantity;
                         totalPrice += listCart.get(i).price;
@@ -161,22 +162,52 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            listCart = itemCartDAO.getALL(idUser);
+
+                            btnCheckout.setText(resultButton);
+                            isReady = true;
+                        }
+                    });
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        t1.start();
+
+    }
+
+    public void refresh(String idUser) {
+        Thread t1 = new Thread() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void run() {
+                while (true) {
+                    final int[] temp = {0};
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listCart = itemCartDAO.getALL(idUser, 1, 2);
                             if (listCart.size() == 0) {
                                 isReady = true;
                                 CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
                                 rcv_cart.setAdapter(cartAdapter);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
                                 rcv_cart.setLayoutManager(linearLayoutManager);
-                                Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
+                                if (temp[0] == 0) {
+                                    Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
+                                }
                                 temp[0]++;
+
+
                                 return;
                             }
                             CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
                             rcv_cart.setAdapter(cartAdapter);
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
                             rcv_cart.setLayoutManager(linearLayoutManager);
-                            btnCheckout.setText(resultButton);
                             isReady = true;
                         }
                     });

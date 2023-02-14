@@ -30,9 +30,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -42,6 +42,7 @@ import vungnv.com.foodyum.DAO.ItemCartDAO;
 import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.model.ItemCart;
+import vungnv.com.foodyum.model.User;
 
 
 public class AddToCartActivity extends AppCompatActivity implements Constant {
@@ -122,38 +123,69 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
             @Override
             public void onClick(View v) {
                 // ISO 8601 (format date)
-
+                List<ItemCart> listCart = itemCartDAO.getALL(idUser, 1,2);
                 Date currentTime = Calendar.getInstance().getTime();
-
                 double price = Double.parseDouble(btnAddToCart.getText().toString().trim().substring(6, btnAddToCart.getText().toString().trim().length() - 1));
                 String notes = edNote.getText().toString().trim();
-                ItemCart item = new ItemCart();
-                item.id = id;
-                item.name = tvNameProduct.getText().toString().trim();
-                item.idMerchant = idMerchant;
-                item.idUser = idUser;
-                item.dateTime = String.valueOf(currentTime);
-                item.quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
-                item.status = 1;
-                item.price = price;
-                item.notes = notes;
+                String nameProduct = tvNameProduct.getText().toString().trim();
+                int quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
 
+                int temp = 0;
 
-                if (itemCartDAO.insert(item) > 0) {
-                    Log.d(TAG, "insert local db cart success");
-                    Toast.makeText(AddToCartActivity.this, ADD_SUCCESS, Toast.LENGTH_SHORT).show();
-                    View view = AddToCartActivity.this.getCurrentFocus();
-                    if (view != null) {
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                for (int i = 0; i < listCart.size(); i++) {
+                    if (listCart.get(i).id.equals(id)) {
+                        temp++;
                     }
-                    onBackPressed();
-                } else {
-                    Toast.makeText(AddToCartActivity.this, ADD_FAIL, Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "insert local db cart fail");
                 }
 
-                isReady = true;
+                // check Exist
+                if (temp > 0) {
+                    int currentQuantity = itemCartDAO.getCurrentQuantity(id);
+                    double currentPrice = itemCartDAO.getCurrentPrice(id);
+                    int newQuantity = currentQuantity + quantity;
+                    double newPrice = currentPrice / currentQuantity * newQuantity;
+                    ItemCart item1 = new ItemCart();
+                    item1.id = id;
+                    item1.quantity = newQuantity;
+                    item1.price = newPrice;
+
+                    if (itemCartDAO.updateQuantityAPrice(item1) > 0) {
+                        Log.d(TAG, "update quantity success");
+                        Toast.makeText(AddToCartActivity.this, UPDATE_QUANTITY, Toast.LENGTH_SHORT).show();
+                    }
+                    isReady = true;
+                    onBackPressed();
+                } else {
+
+                    ItemCart item = new ItemCart();
+                    item.id = id;
+                    item.name = nameProduct;
+                    item.idMerchant = idMerchant;
+                    item.idUser = idUser;
+                    item.dateTime = String.valueOf(currentTime);
+                    item.quantity = quantity;
+                    item.status = 1;
+                    item.price = price;
+                    item.notes = notes;
+
+                    if (itemCartDAO.insert(item) > 0) {
+                        Log.d(TAG, "insert local db cart success");
+                        Toast.makeText(AddToCartActivity.this, ADD_SUCCESS, Toast.LENGTH_SHORT).show();
+                        View view = AddToCartActivity.this.getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+                        onBackPressed();
+                    } else {
+                        Toast.makeText(AddToCartActivity.this, ADD_FAIL, Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "insert local db cart fail");
+                    }
+
+                    isReady = true;
+                }
+
+
             }
         });
 

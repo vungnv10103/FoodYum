@@ -17,6 +17,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.MainActivity;
+import vungnv.com.foodyum.R;
 
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
@@ -52,7 +53,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(message)
-//                .setSmallIcon(R.drawable.icon_notification_client)
+                .setSmallIcon(R.drawable.icon_app)
                 .setContentIntent(pendingIntent);
 
         Notification notification = builder.build();

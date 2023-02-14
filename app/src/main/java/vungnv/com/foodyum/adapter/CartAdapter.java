@@ -56,6 +56,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
         holder.tvName.setText(item.name);
         holder.tvPrice.setText(item.price + "đ");
         holder.tvQuantity.setText(item.quantity + "");
+
         holder.cbCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,22 +64,24 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
                 boolean isSelected = holder.cbCheck.isChecked();
                 //Toast.makeText(context, "" + isSelected, Toast.LENGTH_SHORT).show();
                 ItemCart item1 = new ItemCart();
-                item1.id = item.id;
+                item1.stt = item.stt;
                 if (isSelected) {
                     item1.status = 2;
-                    if (itemCartDAO.updateStatus(item1) > 0) {
+                    if (itemCartDAO.updateStatusWithStt(item1) > 0) {
                         Log.d(TAG, "update status 1 -> 2 success");
                     } else {
                         Log.d(TAG, "error update status");
                     }
                 } else {
                     item1.status = 1;
-                    if (itemCartDAO.updateStatus(item1) > 0) {
+                    if (itemCartDAO.updateStatusWithStt(item1) > 0) {
                         Log.d(TAG, "update status 2 -> 1 success");
                     } else {
                         Log.d(TAG, "error update status");
                     }
                 }
+
+
             }
         });
 
@@ -93,26 +96,30 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
                     return;
                 }
                 holder.tvQuantity.setText(String.valueOf(currentQuantity));
+                double price = item.price / item.quantity * currentQuantity;
+                holder.tvPrice.setText(price + "đ");
                 ItemCart item1 = new ItemCart();
                 item1.id = item.id;
                 item1.quantity = currentQuantity;
-                if (itemCartDAO.updateQuantity(item1) > 0) {
-                    Log.d(TAG, "update quantity success");
+                item1.price = price;
+                if (itemCartDAO.updateQuantityAPrice(item1) > 0) {
+                    Log.d(TAG, "update quantity and prices success");
                 } else {
-                    Log.d(TAG, "update quantity fail");
+                    Log.d(TAG, "update quantity prices fail");
                 }
+
+
                 animationIncrease(currentQuantity, holder.imgIncrease);
                 animationDecrease(currentQuantity, holder.imgDecrease);
-                double price = item.price / item.quantity * currentQuantity;
-                holder.tvPrice.setText(price + "đ");
-                ItemCart item2 = new ItemCart();
-                item2.id = item.id;
-                item2.price = price;
-                if (itemCartDAO.updatePrice(item2) > 0) {
-                    Log.d(TAG, "update price success");
-                } else {
-                    Log.d(TAG, "update price fail");
-                }
+
+//                ItemCart item2 = new ItemCart();
+//                item2.id = item.id;
+//
+//                if (itemCartDAO.updatePrice(item2) > 0) {
+//                    Log.d(TAG, "update price success");
+//                } else {
+//                    Log.d(TAG, "update price fail");
+//                }
 
             }
         });
@@ -125,26 +132,28 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
                     return;
                 }
                 holder.tvQuantity.setText(String.valueOf(currentQuantity));
+                double price = item.price / item.quantity * currentQuantity;
+                holder.tvPrice.setText(price + "đ");
                 ItemCart item1 = new ItemCart();
                 item1.id = item.id;
                 item1.quantity = currentQuantity;
-                if (itemCartDAO.updateQuantity(item1) > 0) {
-                    Log.d(TAG, "update quantity success");
+                item1.price = price;
+                if (itemCartDAO.updateQuantityAPrice(item1) > 0) {
+                    Log.d(TAG, "update quantity and prices success");
                 } else {
-                    Log.d(TAG, "update quantity fail");
+                    Log.d(TAG, "update quantity and prices fail");
                 }
                 animationIncrease(currentQuantity, holder.imgIncrease);
                 animationDecrease(currentQuantity, holder.imgDecrease);
-                double price = item.price / item.quantity * currentQuantity;
-                holder.tvPrice.setText(price + "đ");
-                ItemCart item2 = new ItemCart();
-                item2.id = item.id;
-                item2.price = price;
-                if (itemCartDAO.updatePrice(item2) > 0) {
-                    Log.d(TAG, "update price success");
-                } else {
-                    Log.d(TAG, "update price fail");
-                }
+
+//                ItemCart item2 = new ItemCart();
+//                item2.id = item.id;
+//                item2.price = price;
+//                if (itemCartDAO.updatePrice(item2) > 0) {
+//                    Log.d(TAG, "update price success");
+//                } else {
+//                    Log.d(TAG, "update price fail");
+//                }
             }
         });
 
@@ -173,7 +182,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(), "" + listItem.get(getAdapterPosition()).idMerchant, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "" + listItem.get(getAdapterPosition()).status, Toast.LENGTH_SHORT).show();
                 }
             });
         }

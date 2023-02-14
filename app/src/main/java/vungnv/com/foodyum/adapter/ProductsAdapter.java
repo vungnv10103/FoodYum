@@ -1,6 +1,7 @@
 package vungnv.com.foodyum.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -54,41 +55,44 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        Product item = list.get(position);
+        if (context != null && context instanceof Activity && !((Activity) context).isFinishing()) {
+            Product item = list.get(position);
 
-        String idImage = item.img;
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        storageRef.child("images_product/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // Got the download URL
-                // Load the image using Glide
-                Glide.with(context)
-                        .load(uri)
-                        .into(holder.img);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                Log.d(TAG, "get image from firebase: " + exception.getMessage());
-            }
-        });
-        holder.tvTitle.setText(item.name);
-        holder.tvDesc.setText(item.description);
-        holder.tvRate.setText(String.format("%.2f", item.rate));
-        holder.tvQuantitySold.setText("(" + item.quantity_sold + ")");
+            String idImage = item.img;
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            storageRef.child("images_product/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL
+                    // Load the image using Glide
+                    Glide.with(context)
+                            .load(uri)
+                            .into(holder.img);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                    Log.d(TAG, "get image from firebase: " + exception.getMessage());
+                }
+            });
+            holder.tvTitle.setText(item.name);
+            holder.tvDesc.setText(item.description);
+            holder.tvRate.setText(String.format("%.2f", item.rate));
+            holder.tvQuantitySold.setText("(" + item.quantity_sold + ")");
 
-        float[] results = new float[1];
-        double currentLongitude = 105.77553463;
-        double currentLatitude = 21.06693654;
+            float[] results = new float[1];
+            double currentLongitude = 105.77553463;
+            double currentLatitude = 21.06693654;
 
-        double productLongitude = 106.296250;
-        double productLatitude = 20.200560;
-        Location.distanceBetween(currentLatitude, currentLongitude, productLatitude, productLongitude, results);
-        float distanceInMeters = results[0];
-        holder.tvDistance.setText(String.format("%.1f", distanceInMeters / 1000) + "km");
+            double productLongitude = 106.296250;
+            double productLatitude = 20.200560;
+            Location.distanceBetween(currentLatitude, currentLongitude, productLatitude, productLongitude, results);
+            float distanceInMeters = results[0];
+            holder.tvDistance.setText(String.format("%.1f", distanceInMeters / 1000) + "km");
+        }
+
 
     }
 
@@ -116,30 +120,30 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             tvDistance = itemView.findViewById(R.id.tvDistance);
 
             //if (isReady) {
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, ShowAllProductsByMerchantActivity.class);
-                        Bundle bundle = new Bundle();
-                        Product item = list.get(getAdapterPosition());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ShowAllProductsByMerchantActivity.class);
+                    Bundle bundle = new Bundle();
+                    Product item = list.get(getAdapterPosition());
 
-                        bundle.putBoolean("isShowBottomSheet", true);
-                        bundle.putString("id", item.id);
-                        bundle.putString("idMerchant", item.idUser);
-                        intent.putExtra("data", bundle);
-                        bundle.putString("img", item.img);
-                        bundle.putString("name", item.name);
-                        bundle.putString("desc", item.description);
-                        bundle.putDouble("discount", item.discount);
-                        if (item.discount > 0) {
-                            bundle.putDouble("price", item.price - item.price / 100 * item.discount);
-                        } else {
-                            bundle.putDouble("price", item.price);
-                        }
-                        intent.putExtra("data", bundle);
-                        context.startActivity(intent);
+                    bundle.putBoolean("isShowBottomSheet", true);
+                    bundle.putString("id", item.id);
+                    bundle.putString("idMerchant", item.idUser);
+                    intent.putExtra("data", bundle);
+                    bundle.putString("img", item.img);
+                    bundle.putString("name", item.name);
+                    bundle.putString("desc", item.description);
+                    bundle.putDouble("discount", item.discount);
+                    if (item.discount > 0) {
+                        bundle.putDouble("price", item.price - item.price / 100 * item.discount);
+                    } else {
+                        bundle.putDouble("price", item.price);
                     }
-                });
+                    intent.putExtra("data", bundle);
+                    context.startActivity(intent);
+                }
+            });
             //}
 
         }

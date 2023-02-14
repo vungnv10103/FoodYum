@@ -90,6 +90,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
         map.put("Bánh ngọt", "Cake");
         map.put("Đồ ăn nhanh", "Fast Food");
         map.put("Xúc xích", "Sausages");
+        map.put("Khác","Other");
 
         Intent intent = getIntent();
         Intent intent2 = getIntent();

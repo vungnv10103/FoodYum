@@ -59,44 +59,46 @@ public class CouponAdapter extends RecyclerView.Adapter<CouponAdapter.ViewHolder
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Coupon item = list.get(position);
+        if (context != null && context instanceof Activity && !((Activity) context).isFinishing()) {
+            Coupon item = list.get(position);
 
+            String idImage = item.img;
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            storageRef.child("images_coupon/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL
+                    // Load the image using Glide
+                    Glide.with(context)
+                            .load(uri)
+                            .into(holder.imgCoupon);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                    Log.d(TAG, "get image from firebase: " + exception.getMessage());
+                }
+            });
 
-        String idImage = item.img;
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        storageRef.child("images_coupon/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // Got the download URL
-                // Load the image using Glide
-                Glide.with(context)
-                        .load(uri)
-                        .into(holder.imgCoupon);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                Log.d(TAG, "get image from firebase: " + exception.getMessage());
-            }
-        });
+            holder.tvDiscount.setText(item.discount + "%");
+            holder.tvExpiry.setText(item.expiry);
+            holder.btnApply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, PaymentActivity.class);
+                    Bundle bundle = new Bundle();
 
-        holder.tvDiscount.setText(item.discount + "%");
-        holder.tvExpiry.setText(item.expiry);
-        holder.btnApply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, PaymentActivity.class);
-                Bundle bundle = new Bundle();
+                    bundle.putDouble("discount", item.discount);
+                    bundle.putString("id", item.id);
+                    intent.putExtra("data-coupon", bundle);
+                    v.getContext().startActivity(intent);
+                    ((Activity) context).finish();
+                }
+            });
+        }
 
-                bundle.putDouble("discount", item.discount);
-                bundle.putString("id", item.id);
-                intent.putExtra("data-coupon", bundle);
-                v.getContext().startActivity(intent);
-                ((Activity) context).finish();
-            }
-        });
     }
 
     @Override
@@ -150,7 +152,7 @@ public class CouponAdapter extends RecyclerView.Adapter<CouponAdapter.ViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(), ""+ list.get(getAdapterPosition()).id, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "" + list.get(getAdapterPosition()).id, Toast.LENGTH_SHORT).show();
                 }
             });
         }
