@@ -29,6 +29,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -45,14 +46,11 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+
 
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
@@ -82,7 +80,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
     private double service_charge = 0;
 
     private String valueContext = "";
-    private int count = 0;
+    private String name = "";
+    private String phoneNumber = "";
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -96,10 +95,14 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String idUser = auth.getUid();
         String email = Objects.requireNonNull(auth.getCurrentUser()).getEmail();
-        tvFullName.setText(usersDAO.getNameUser(email) + " | ");
-        tvPhoneNumber.setText(usersDAO.getPhone(email));
+        name = usersDAO.getName(email);
+        phoneNumber = usersDAO.getPhone(email);
+        if (name.length() != 0 && phoneNumber.length() != 0) {
+            tvFullName.setText(name + " | ");
+            tvPhoneNumber.setText(phoneNumber);
+        }
 
-        refreshAddress(auth);
+        refreshAddress();
         refreshList(idUser);
 
         // get service_charge_value
@@ -178,48 +181,54 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         btnPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String resultPrice = tvNewPrice.getText().toString().trim();
-                if (resultPrice.equals("0đ")) {
-                    Toast.makeText(PaymentActivity.this, "Không có sản phẩm để mua !", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                listOrder = itemCartDAO.getALL(idUser, 2);
+                boolean checkInfo = isNull();
 
-                Date currentTime = Calendar.getInstance().getTime();
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat fm = new SimpleDateFormat();
-                fm.applyPattern("HH:mm:ss-z");
-                String time = fm.format(currentTime);
-                String date = df.format(currentTime);
-                // depends on the date and time (split)
-                String idOrder = date.replaceAll("-", "")
-                        + time.substring(0, time.indexOf("-")).replaceAll(":", "");
-
-
-                String idMerchant = "";
-                List<ItemCart> listOrderByIdMerchant = null;
-                for (int i = 0; i < listOrder.size(); i++) {
-                    idMerchant = listOrder.get(i).idMerchant;
-                    listOrderByIdMerchant = itemCartDAO.getALLByIdMerchant(idMerchant, 2);
+                if (isNull()) {
+                     showConfirmDialog();
 
                 }
-                // true for 1 idMerchant at a time (>2 id in cart => error)
-                if (listOrderByIdMerchant != null) {
-                    for (int j = 0; j < listOrderByIdMerchant.size(); j++) {
-                        pushOrder(idOrder, idUser, idMerchant, currentTime.toString(), listOrderByIdMerchant.get(j).name, listOrderByIdMerchant.get(j).quantity
-                                , 1, listOrderByIdMerchant.get(j).price, 20, listOrderByIdMerchant.get(j).notes
-                        );
-                    }
-                }
-                // update status item cart 2 -> 0
-                ItemCart item = new ItemCart();
-                item.status = 0;
-                for (int i = 0; i < listOrder.size(); i++) {
-                    item.id = listOrder.get(i).id;
-                    if (itemCartDAO.updateStatus(item) > 0) {
-                        Log.d(TAG, "update status item cart 2 -> 0");
-                    }
-                }
+//                String resultPrice = tvNewPrice.getText().toString().trim();
+//                if (resultPrice.equals("0đ")) {
+//                    Toast.makeText(PaymentActivity.this, NO_TO_BUY, Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                listOrder = itemCartDAO.getALL(idUser, 2);
+//
+//                Date currentTime = Calendar.getInstance().getTime();
+//                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+//                @SuppressLint("SimpleDateFormat") SimpleDateFormat fm = new SimpleDateFormat();
+//                fm.applyPattern("HH:mm:ss-z");
+//                String time = fm.format(currentTime);
+//                String date = df.format(currentTime);
+//                // depends on the date and time (split)
+//                String idOrder = date.replaceAll("-", "")
+//                        + time.substring(0, time.indexOf("-")).replaceAll(":", "");
+//
+//
+//                String idMerchant = "";
+//                List<ItemCart> listOrderByIdMerchant = null;
+//                for (int i = 0; i < listOrder.size(); i++) {
+//                    idMerchant = listOrder.get(i).idMerchant;
+//                    listOrderByIdMerchant = itemCartDAO.getALLByIdMerchant(idMerchant, 2);
+//
+//                }
+//                // true for 1 idMerchant at a time (>2 id in cart => error)
+//                if (listOrderByIdMerchant != null) {
+//                    for (int j = 0; j < listOrderByIdMerchant.size(); j++) {
+//                        pushOrder(idOrder, idUser, idMerchant, currentTime.toString(), listOrderByIdMerchant.get(j).name, listOrderByIdMerchant.get(j).quantity
+//                                , 1, listOrderByIdMerchant.get(j).price, 20, listOrderByIdMerchant.get(j).notes
+//                        );
+//                    }
+//                }
+//                // update status item cart 2 -> 0
+//                ItemCart item = new ItemCart();
+//                item.status = 0;
+//                for (int i = 0; i < listOrder.size(); i++) {
+//                    item.id = listOrder.get(i).id;
+//                    if (itemCartDAO.updateStatus(item) > 0) {
+//                        Log.d(TAG, "update status item cart 2 -> 0");
+//                    }
+//                }
 
 
             }
@@ -271,11 +280,39 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                     Log.d(TAG, "onComplete push order: " + "Transaction failed.");
                     Toast.makeText(PaymentActivity.this, ORDER_FAIL, Toast.LENGTH_SHORT).show();
                 } else {
+                    lnlCoupon.setVisibility(View.INVISIBLE);
                     Toast.makeText(PaymentActivity.this, ORDER_SUCCESS, Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+    }
+
+    private boolean isNull() {
+        return (name.length() == 0 || phoneNumber.length() == 0);
+    }
+
+    private void showConfirmDialog() {
+        Dialog dialog = new Dialog(PaymentActivity.this);
+        dialog.setContentView(R.layout.dialog_confirm);
+        dialog.setCancelable(false);
+        Button btnCancel, btnConfirm;
+
+        btnCancel = dialog.findViewById(R.id.btnCancel);
+        btnConfirm = dialog.findViewById(R.id.btnConfirm);
+        btnConfirm.setOnClickListener(v1 -> {
+            // update information
+            Toast.makeText(this, "updating...", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+        btnCancel.setOnClickListener(v12 -> dialog.dismiss());
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setAttributes(lp);
+        dialog.show();
     }
 
 
@@ -284,7 +321,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                 {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
     }
 
-    private void refreshAddress(FirebaseAuth auth) {
+    private void refreshAddress() {
         Thread t1 = new Thread() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -298,7 +335,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                             public void onLocationChanged(Location location) {
                                 if (location != null) {
                                     Geocoder geocoder = new Geocoder(PaymentActivity.this, Locale.getDefault());
-                                    List<Address> addresses = null;
+                                    List<Address> addresses;
                                     try {
                                         addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                                         String mLocation = addresses.get(0).getAddressLine(0);
@@ -349,7 +386,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                                 rcvOrder.setAdapter(orderAdapter);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
                                 rcvOrder.setLayoutManager(linearLayoutManager);
-                                tvQuantityItem.setText("Tạm tính(0 món)");
+                                tvQuantityItem.setText(DEFAULT_TV_QUANTITY);
                                 tvTotalPrice.setText(0 + "đ");
                                 tvFee.setText(0 + "đ");
                                 tvOldPrice.setVisibility(View.INVISIBLE);

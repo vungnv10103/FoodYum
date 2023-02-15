@@ -354,6 +354,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                                     }
                                     Log.d(TAG, "Error: " + errorMessage);
                                     Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+
                                 }
                             }
                         });
@@ -555,7 +556,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         if (pref != null) {
             boolean isSave = pref.getBoolean("REMEMBER", false);
             if (isSave) {
-                btnLogin.setOnClickListener(null);
+
                 String email = pref.getString("EMAIL", "");
                 String pass = pref.getString("PASSWORD", "");
                 login(email, pass);

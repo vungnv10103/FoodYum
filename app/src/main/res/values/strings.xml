@@ -104,6 +104,18 @@
     <string name="decrease">Giảm</string>
     <string name="apply">Áp dụng</string>
     <string name="enter_discount_code">Nhập mã giảm giá ở đây</string>
+    <string name="info_acc">Thông tin tài khoản</string>
+    <string name="default_name">Nguyễn Văn A</string>
+    <string name="delivered">Đã giao</string>
+    <string name="cancelled">Đã huỷ</string>
+    <string name="waiting">Đang chờ</string>
+    <string name="request">Request</string>
+    <string name="code">Code</string>
+    <string name="order_management">Quản lí đơn hàng</string>
+    <string name="cart">cart</string>
+    <string name="name_vi">Tên</string>
+    <string name="email_vi">Địa chỉ Email</string>
+    <string name="gender">Giới tính</string>
 
 
 </resources>

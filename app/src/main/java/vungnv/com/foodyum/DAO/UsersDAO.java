@@ -91,7 +91,7 @@ public class UsersDAO {
         return list.get(0).searchHistory;
     }
 
-    public String getNameUser(String email) {
+    public String getName(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
         return list.get(0).name;

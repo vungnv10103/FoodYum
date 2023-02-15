@@ -18,6 +18,7 @@ public interface Constant {
     String REQUEST_FORM = "Yêu cầu của bạn đã được gửi\nĐợi phê duyệt !!";
     String ERROR_FETCHING_DATE = "Lỗi lấy dữ liệu ";
     String TAG = "log";
+    String DEFAULT_TV_QUANTITY = "Tạm tính(0 món)";
     String UPDATE_IMAGE = "Cập nhật ảnh thành công";
     String ERROR_LOGIN = "Tài khoản hoặc mật khẩu không đúng !!";
     String PASS_NO_MATCH = "Mật khẩu không khớp nhau !!";
@@ -30,6 +31,7 @@ public interface Constant {
     String ADD_FAIL = "Thêm thất bại !";
     String CART_EMPTY = "Giỏ hàng trống !";
     String NO_CHOOSE = "Chưa có sản phẩm nào được chọn !";
+    String NO_TO_BUY = "Không có sản phẩm để mua !";
     String ORDER_SUCCESS = "Đặt hàng thành công !";
     String ORDER_FAIL = "Đặt hàng thất bại !";
     String ADD_FAVOURITE = "Đã thêm vào yêu thích !";

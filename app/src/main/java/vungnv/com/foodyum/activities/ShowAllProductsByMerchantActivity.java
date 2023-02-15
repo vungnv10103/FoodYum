@@ -624,7 +624,6 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                         Log.d(TAG, "update quantity success");
                         Toast.makeText(ShowAllProductsByMerchantActivity.this, UPDATE_QUANTITY, Toast.LENGTH_SHORT).show();
                     }
-                    isReady = true;
                 } else {
 
                     ItemCart item = new ItemCart();
@@ -650,9 +649,9 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                         Toast.makeText(ShowAllProductsByMerchantActivity.this, ADD_FAIL, Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "insert local db cart fail");
                     }
-
-                    isReady = true;
                 }
+                dialog.dismiss();
+                isReady = true;
 
             }
         });

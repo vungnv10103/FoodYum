@@ -104,4 +104,16 @@
     <string name="decrease">Value</string>
     <string name="apply">Apply</string>
     <string name="enter_discount_code">Enter discount code here</string>
+    <string name="info_acc">Account Information</string>
+    <string name="default_name">Nguyen VAn A</string>
+    <string name="delivered">Delivered</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="waiting">Waiting</string>
+    <string name="request">Request</string>
+    <string name="code">Code</string>
+    <string name="order_management">Order Management</string>
+    <string name="cart">cart</string>
+    <string name="name_vi">Name</string>
+    <string name="email_vi">Email address</string>
+    <string name="gender">Gender</string>
 </resources>
