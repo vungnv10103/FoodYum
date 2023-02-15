@@ -3,6 +3,7 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+
 android {
     namespace 'vungnv.com.foodyum'
     compileSdk 33
@@ -30,10 +31,16 @@ android {
     buildFeatures {
         viewBinding true
     }
+
 }
+
 
 dependencies {
 
+    // Sweet Alert Dialog
+   // implementation 'cn.pedant.sweetalert:library:1.3'
+
+//    implementation "com.github.AchmadHafid:LottieDialog:5.0.0"
 
     // firebase
     implementation 'com.google.firebase:firebase-auth:21.1.0'

@@ -48,6 +48,8 @@ public class SearchDetailActivity extends AppCompatActivity implements Constant 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(),0);
                 onBackPressed();
             }
         });
@@ -116,13 +118,13 @@ public class SearchDetailActivity extends AppCompatActivity implements Constant 
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkChangeListener, intentFilter);
         super.onStart();
-   //    setContentView(R.layout.activity_search_detail);
+        //    setContentView(R.layout.activity_search_detail);
 //        SearchView searchView = findViewById(R.id.search_view);
         //searchView.setIconified(false);
         edSearch.requestFocus();
         edSearch.setSelection(edSearch.getText().length());
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(edSearch, InputMethodManager.SHOW_IMPLICIT);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
 

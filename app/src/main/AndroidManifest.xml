@@ -21,6 +21,13 @@
         android:theme="@style/Theme.FoodYum"
         tools:targetApi="31">
         <activity
+            android:name=".activities.InformationUserActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".activities.CouponActivity"
             android:exported="false">
             <meta-data
@@ -30,7 +37,6 @@
         <activity
             android:name=".activities.PaymentActivity"
             android:exported="true">
-
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -50,33 +56,22 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activities.RegisterActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false"></activity>
         <activity
             android:name=".activities.SearchDetailActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false"></activity>
         <activity
             android:name=".activities.AddToCartActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".activities.OptionFilterActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false"></activity>
         <activity
             android:name=".activities.ShowAllProductsByMerchantActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false"></activity>
 
         <service
             android:name=".fcm.MyFirebaseMessagingService"
@@ -88,9 +83,7 @@
 
         <activity
             android:name=".activities.ShowListProductDetailActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false"></activity>
 
         <meta-data
             android:name="preloaded_fonts"

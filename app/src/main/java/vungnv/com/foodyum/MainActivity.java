@@ -1,5 +1,7 @@
 package vungnv.com.foodyum;
 
+import static vungnv.com.foodyum.utils.createNotification.mCreateNotification;
+
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Build;
@@ -9,13 +11,10 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements Constant {
         setContentView(binding.getRoot());
 
         notification.createNotificationChannel1(MainActivity.this);
-        //mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
+        //vungnv.com.foodyum.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
@@ -55,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements Constant {
             String idScreen = data.getString("screen");
             if (idScreen.equals("cart")) {
                 navController.navigate(R.id.navigation_cart);
+            } else if (idScreen.equals("account")) {
+                navController.navigate(R.id.navigation_account);
             }
         }
         NavigationUI.setupWithNavController(binding.navView, navController);
@@ -74,8 +75,6 @@ public class MainActivity extends AppCompatActivity implements Constant {
             }
             return false;
         });
-
-
 
 
     }

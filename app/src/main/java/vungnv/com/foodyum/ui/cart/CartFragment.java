@@ -1,6 +1,5 @@
 package vungnv.com.foodyum.ui.cart;
 
-import static android.app.Activity.RESULT_OK;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -8,16 +7,15 @@ import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -25,17 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 
 import dmax.dialog.SpotsDialog;
@@ -47,13 +36,14 @@ import vungnv.com.foodyum.activities.PaymentActivity;
 import vungnv.com.foodyum.adapter.CartAdapter;
 import vungnv.com.foodyum.databinding.FragmentCartBinding;
 import vungnv.com.foodyum.model.ItemCart;
-import vungnv.com.foodyum.model.Order;
+
 import vungnv.com.foodyum.utils.OnBackPressed;
 
 
 public class CartFragment extends Fragment implements Constant, OnBackPressed {
 
     private Toolbar toolbar;
+    private ImageButton imgOrderHistory;
     private Button btnCheckout;
     private RecyclerView rcv_cart;
     public String date;
@@ -75,7 +65,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
 
         init(root);
 
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_black);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,6 +79,13 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
         // listCart(idUser);
         refresh(idUser);
         refreshButton(idUser);
+
+        imgOrderHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "updating...", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         btnCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +112,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
 
     private void init(View view) {
         toolbar = view.findViewById(R.id.toolBarCart);
+        imgOrderHistory = view.findViewById(R.id.imgOrderHistory);
         btnCheckout = view.findViewById(R.id.btnCheckout);
         rcv_cart = view.findViewById(R.id.rcv_cart);
         itemCartDAO = new ItemCartDAO(getContext());

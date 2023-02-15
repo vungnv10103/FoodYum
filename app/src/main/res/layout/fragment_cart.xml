@@ -6,27 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".ui.cart.CartFragment">
 
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayoutCart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolBarCart"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayoutCart"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/white">
+            android:layout_height="wrap_content">
 
-            <TextView
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolBarCart"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/my_cart"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/teal2">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="@string/my_cart"
+                    android:fontFamily="@font/roboto_bold"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:padding="5dp"
+                    android:gravity="end">
+
+                    <ImageButton
+                        android:id="@+id/imgOrderHistory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/todo"
+                        android:src="@drawable/order_history"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/invoice_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:background="@drawable/badge_bg"
+                        android:gravity="center"
+                        android:text="@string/default_quantity_sold"
+                        android:textColor="@color/black"
+                        android:textSize="11sp"
+                        app:layout_constraintEnd_toEndOf="@+id/imgOrderHistory"
+                        app:layout_constraintTop_toTopOf="@+id/imgOrderHistory" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:layout_width="match_parent"
