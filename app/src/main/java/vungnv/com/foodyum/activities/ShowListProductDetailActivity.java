@@ -172,10 +172,9 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
         progressDialog = new SpotsDialog(ShowListProductDetailActivity.this, R.style.Custom);
     }
 
-    private void listProduct(String type) { // list_product_all
+    private void listProduct(String type) {
         progressDialog.show();
         String path = "list_product_all";
-        String path2 = "demo";
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(path);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -184,15 +183,9 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
                 for (DataSnapshot childSnapshot1 : dataSnapshot.getChildren()) {
                     Product value = childSnapshot1.getValue(Product.class);
                     assert value != null;
-                    if (value.type.equals(type)) {
+                    if (value.type.equals(type) && value.status !=0) {
                         aListProducts.add(value);
                     }
-                }
-                if (aListProducts.size() == 0) {
-                    Toast.makeText(ShowListProductDetailActivity.this, NO_DATA, Toast.LENGTH_SHORT).show();
-                    isReady = true;
-                    progressDialog.dismiss();
-                    return;
                 }
 
                 productsAdapter = new ProductsAdapter(ShowListProductDetailActivity.this, aListProducts);

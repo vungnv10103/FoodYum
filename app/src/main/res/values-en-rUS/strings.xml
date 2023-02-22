@@ -86,7 +86,7 @@
     <string name="notes">Do you have a message for the restaurant ?</string>
     <string name="default_value_discount">10%</string>
     <string name="search">Search</string>
-    <string name="payment_page">Payment Page</string>
+    <string name="payment_page">Payment</string>
     <string name="order">Order</string>
     <string name="address">Delivery address</string>
     <string name="customer_name">Customer`s full name |</string>

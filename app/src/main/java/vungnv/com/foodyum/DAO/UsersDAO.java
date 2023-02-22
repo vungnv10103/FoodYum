@@ -31,8 +31,6 @@ public class UsersDAO {
         values.put("phoneNumber", obj.phoneNumber);
         values.put("searchHistory", obj.searchHistory);
         values.put("favouriteRestaurant", obj.favouriteRestaurant);
-        values.put("address", obj.address);
-        values.put("coordinates", obj.coordinates);
         values.put("feedback", obj.feedback);
 
         return db.insert("User", null, values);
@@ -43,7 +41,6 @@ public class UsersDAO {
         ContentValues values = new ContentValues();
         values.put("name", obj.name);
         values.put("phoneNumber", obj.phoneNumber);
-        values.put("address", obj.address);
 
         return db.update("User", values, "email=?", new String[]{obj.email});
     }
@@ -54,8 +51,6 @@ public class UsersDAO {
         values.put("name", obj.name);
         values.put("pass", obj.pass);
         values.put("phoneNumber", obj.phoneNumber);
-        values.put("coordinates", obj.coordinates);
-        values.put("address", obj.address);
 
         return db.update("User", values, "email=?", new String[]{obj.email});
     }
@@ -94,20 +89,21 @@ public class UsersDAO {
     public String getName(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
+        if (list.size() ==0){
+            return null;
+        }
         return list.get(0).name;
     }
 
     public String getPhone(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<User> list = getData(sql, email);
+        if (list.size() ==0){
+            return null;
+        }
         return list.get(0).phoneNumber;
     }
 
-    public String getAddress(String email) {
-        String sql = "SELECT * FROM User WHERE email=?";
-        List<User> list = getData(sql, email);
-        return list.get(0).address;
-    }
 
     public String getFeedback(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
@@ -190,10 +186,8 @@ public class UsersDAO {
             obj.email = cursor.getString(cursor.getColumnIndex("email"));
             obj.pass = cursor.getString(cursor.getColumnIndex("pass"));
             obj.phoneNumber = cursor.getString(cursor.getColumnIndex("phoneNumber"));
-            obj.address = cursor.getString(cursor.getColumnIndex("address"));
             obj.searchHistory = cursor.getString(cursor.getColumnIndex("searchHistory"));
             obj.favouriteRestaurant = cursor.getString(cursor.getColumnIndex("favouriteRestaurant"));
-            obj.coordinates = cursor.getString(cursor.getColumnIndex("coordinates"));
             obj.feedback = cursor.getString(cursor.getColumnIndex("feedback"));
 
             list.add(obj);

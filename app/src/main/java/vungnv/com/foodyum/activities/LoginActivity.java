@@ -89,8 +89,6 @@ public class LoginActivity extends AppCompatActivity implements Constant {
     private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
     private User itemUser;
     private UsersDAO usersDAO;
-    private String mLocation = "";
-    private String coordinate = "";
     private ArrayList<User> listDataUser;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -112,7 +110,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         chkLanguage.setChecked(currentLanguage.equals("en"));
 //        Glide.with(this).load("https://firebasestorage.googleapis.com/v0/b/loadimg-8b067.appspot.com/o/images%2F2022_12_04_07_45_07?alt=media&token=0525ea03-1702-4542-9290-a60cac8a8d67").into(img);
         askPermission();
-        getLastLocation1();
+        getLastLocation();
 
         SharedPreferences pref = getSharedPreferences("USER_FILE", MODE_PRIVATE);
         if (pref != null) {
@@ -235,20 +233,21 @@ public class LoginActivity extends AppCompatActivity implements Constant {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onClick(View v) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                String newPassword = "foodyum321";
-
-                assert user != null;
-                user.updatePassword(newPassword)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(LoginActivity.this, "Mật khẩu của bạn đã mặc định về: " + newPassword, Toast.LENGTH_SHORT).show();
-                                    edPass.setText("");
-                                }
-                            }
-                        });
+                resetPassWorld(edEmail.getText().toString().trim());
+//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//                String newPassword = "foodyum321";
+//
+//                assert user != null;
+//                user.updatePassword(newPassword)
+//                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<Void> task) {
+//                                if (task.isSuccessful()) {
+//                                    Toast.makeText(LoginActivity.this, "Mật khẩu của bạn đã mặc định về: " + newPassword, Toast.LENGTH_SHORT).show();
+//                                    edPass.setText("");
+//                                }
+//                            }
+//                        });
 
 
             }
@@ -319,6 +318,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                                 if (task.isSuccessful()) {
                                     FirebaseUser currentUser = auth.getCurrentUser();
                                     assert currentUser != null;
+                                    //verifyEmail();
                                     Log.d(TAG, "current user: " + currentUser.getEmail());
                                     rememberUser(email, pass, cbRemember.isChecked());
                                     if (checkAccountExistInLocal(auth.getUid())) {
@@ -364,7 +364,6 @@ public class LoginActivity extends AppCompatActivity implements Constant {
     }
 
     private void saveDbUserInLocal(String id, String email, String pass) {
-        getLastLocation();
         User itemUser = new User();
 
         itemUser.id = id;
@@ -376,8 +375,6 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         itemUser.searchHistory = "";
         itemUser.favouriteRestaurant = "";
         itemUser.feedback = "";
-        itemUser.coordinates = coordinate;
-        itemUser.address = mLocation;
 
         if (usersDAO.insert(itemUser) > 0) {
             Log.d(TAG, "save db user success: ");
@@ -401,7 +398,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         editor.apply();
     }
 
-    private void getLastLocation1() {
+    private void getLastLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             fusedLocationProviderClient.getLastLocation()
@@ -414,12 +411,12 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                                 try {
                                     addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 //                                    edLocation.setText("" + addresses.get(0).getAddressLine(0));
-                                    mLocation = addresses.get(0).getAddressLine(0);
+                                    String mLocation = addresses.get(0).getAddressLine(0);
                                     float[] results = new float[1];
                                     Log.d(TAG, "current Location: " + mLocation);
                                     double currentLongitude = addresses.get(0).getLongitude();
                                     double currentLatitude = addresses.get(0).getLatitude();
-                                    coordinate = currentLongitude + "-" + currentLatitude;
+                                   // String coordinate = currentLongitude + "-" + currentLatitude;
                                     double coNhueLongitude = 105.77553463;
                                     double coNhueLatitude = 21.06693654;
                                     Log.d(TAG, "currentLongitude: " + currentLongitude + " currentLatitude: " + currentLatitude);
@@ -445,30 +442,6 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         }
     }
 
-    private void getLastLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationProvider locationManager = new LocationProvider(LoginActivity.this);
-            locationManager.getLastLocation(new LocationProvider.OnLocationChangedListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    if (location != null) {
-                        Geocoder geocoder = new Geocoder(LoginActivity.this, Locale.getDefault());
-                        List<Address> addresses = null;
-                        try {
-                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-
-                            mLocation = addresses.get(0).getAddressLine(0);
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        } else {
-            askPermission();
-        }
-    }
 
     private void changeLanguage(String language) {
         Resources res = getResources();
@@ -528,6 +501,34 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                         // Log
                         Log.d(TAG, "token:" + token);
                         rememberToken(token);
+                    }
+                });
+    }
+    private void verifyEmail(){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        assert user != null;
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Email sent.");
+                        }
+                    }
+                });
+    }
+    private void resetPassWorld(String email){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Email sent.");
+                        }
                     }
                 });
     }

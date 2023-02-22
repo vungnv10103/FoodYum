@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -61,8 +62,6 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
     private Button btnRegister;
 
     FusedLocationProviderClient fusedLocationProviderClient;
-    private String mLocation = "";
-    private String coordinate = "";
 
     private UsersDAO usersDAO;
     private final EncryptingPassword encryptingPassword = new EncryptingPassword();
@@ -91,12 +90,14 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-                                            progressDialog.dismiss();
+                                            verifyEmail();
+
                                             if (checkAccountExist(auth.getUid())) {
                                                 upLoadUser(auth.getUid(), email, pass);
                                                 saveDbUserInLocal(auth.getUid(), email, pass);
                                             }
                                             rememberUser(email, pass);
+                                            progressDialog.dismiss();
                                             Toast.makeText(RegisterActivity.this, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                                             finishAffinity();
@@ -161,6 +162,21 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
         }
         return true;
     }
+    private void verifyEmail(){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        assert user != null;
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Email sent.");
+                        }
+                    }
+                });
+    }
 
     private void saveDbUserInLocal(String id, String email, String pass) {
         getLastLocation();
@@ -174,8 +190,6 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
         itemUser.phoneNumber = "";
         itemUser.searchHistory = "";
         itemUser.feedback = "";
-        itemUser.coordinates = coordinate;
-        itemUser.address = mLocation;
 
         if (usersDAO.insert(itemUser) > 0) {
             Log.d(TAG, "save db user success: ");
@@ -233,11 +247,18 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
                                 List<Address> addresses = null;
                                 try {
                                     addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                    mLocation = addresses.get(0).getAddressLine(0);
+                                    String mLocation = addresses.get(0).getAddressLine(0);
                                     Log.d(TAG, "current Location: " + mLocation);
                                     double currentLongitude = addresses.get(0).getLongitude();
                                     double currentLatitude = addresses.get(0).getLatitude();
-                                    coordinate = currentLongitude + "-" + currentLatitude;
+                                    //String coordinate = currentLongitude + "-" + currentLatitude;
+                                    float[] results = new float[1];
+                                    double coNhueLongitude = 105.77553463;
+                                    double coNhueLatitude = 21.06693654;
+                                    Log.d(TAG, "currentLongitude: " + currentLongitude + " currentLatitude: " + currentLatitude);
+                                    Location.distanceBetween(currentLatitude, currentLongitude, coNhueLatitude, coNhueLongitude, results);
+                                    float distanceInMeters = results[0];
+                                    Log.d(TAG, "distance: " + String.format("%.1f", distanceInMeters / 1000) + "km");
 
                                 } catch (IOException e) {
                                     e.printStackTrace();
