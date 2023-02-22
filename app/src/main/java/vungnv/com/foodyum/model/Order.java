@@ -18,11 +18,12 @@ public class Order {
     public Order() {
     }
 
-    public Order(int pos, String id, String idUser,String dateTime, String items,int quantity, int status,
+    public Order(int pos, String id, String idUser, String idMerchant, String dateTime, String items,int quantity, int status,
                  double price, int waitingTime, String notes) {
         this.pos = pos;
         this.id = id;
         this.idUser = idUser;
+        this.idMerchant  = idMerchant;
         this.dateTime = dateTime;
         this.items = items;
         this.quantity = quantity;
@@ -32,22 +33,13 @@ public class Order {
         this.notes = notes;
     }
 
-    public Order(int pos, String idOrder, String idUser, String idMerchant, String toString, String name, int quantity, int i, Double price, String notes) {
-        this.pos = pos;
-        this.id = idOrder;
-        this.idUser = idUser;
-        this.dateTime = dateTime;
-        this.items = items;
-        this.quantity = quantity;
-        this.price = price;
-        this.notes = notes;
-    }
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("pos", pos);
         result.put("id", id);
         result.put("idUser", idUser);
+        result.put("idMerchant", idMerchant);
         result.put("dateTime", dateTime);
         result.put("items", items);
         result.put("quantity",quantity);

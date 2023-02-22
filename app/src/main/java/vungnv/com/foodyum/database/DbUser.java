@@ -28,9 +28,7 @@ public class DbUser extends SQLiteOpenHelper implements Constant {
                 "phoneNumber TEXT ," +
                 "searchHistory TEXT ," +
                 "favouriteRestaurant TEXT ," +
-                "feedback TEXT ," +
-                "coordinates TEXT ," +
-                "address TEXT not null)";
+                "feedback TEXT not null)";
         db.execSQL(createTableUser);
     }
 

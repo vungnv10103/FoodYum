@@ -197,7 +197,7 @@ public class HomeFragment extends Fragment implements OnBackPressed, Constant, S
                 gridViewCategories.setOnItemClickListener((adapterView, view, i, l) -> {
                     Intent intent = new Intent(getContext(), ShowListProductDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putInt("id", aListCate.get(i).id);
+                        bundle.putInt("id", aListCate.get(i).id);
                     bundle.putString("img", aListCate.get(i).img);
                     bundle.putString("name", aListCate.get(i).name);
                     intent.putExtra("data-category", bundle);

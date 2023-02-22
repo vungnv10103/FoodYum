@@ -46,6 +46,9 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -78,6 +81,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
     private final long delay = 1000;
     private double fee = 0;
     private double service_charge = 0;
+    private int waiting_time = 0;
 
     private String valueContext = "";
     private String name = "";
@@ -97,8 +101,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         String email = Objects.requireNonNull(auth.getCurrentUser()).getEmail();
         name = usersDAO.getName(email);
         phoneNumber = usersDAO.getPhone(email);
-        if (name.length() != 0 && phoneNumber.length() != 0) {
+        if (name != null) {
             tvFullName.setText(name + " | ");
+        }
+        if (phoneNumber != null) {
             tvPhoneNumber.setText(phoneNumber);
         }
 
@@ -107,6 +113,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
 
         // get service_charge_value
         setContext(null, "service_charge_value");
+        // get waiting_time
+        setContext(null, "waiting_time");
 
 
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_black);
@@ -181,54 +189,67 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         btnPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean checkInfo = isNull();
+                // boolean checkInfo = isNull();
 
-                if (isNull()) {
-                     showConfirmDialog();
+//                if (isNull()) {
+//                     showConfirmDialog();
+//
+//                }
+
+                String resultPrice = tvNewPrice.getText().toString().trim();
+                if (resultPrice.equals("0đ")) {
+                    Toast.makeText(PaymentActivity.this, NO_TO_BUY, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                listOrder = itemCartDAO.getALL(idUser, 2);
+
+                Date currentTime = Calendar.getInstance().getTime();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat fm = new SimpleDateFormat();
+                fm.applyPattern("HH:mm:ss-z");
+                String time = fm.format(currentTime);
+                String date = df.format(currentTime);
+                // depends on the date and time (split)
+                String idOrder = date.replaceAll("-", "")
+                        + time.substring(0, time.indexOf("-")).replaceAll(":", "");
+
+
+                String sTotalPrice = tvNewPrice.getText().toString().trim();
+                double totalPrice = Double.parseDouble(sTotalPrice.substring(0, sTotalPrice.length() - 1));
+                String idMerchant = "";
+                List<ItemCart> listOrderByIdMerchant = null;
+                for (int i = 0; i < listOrder.size(); i++) {
+                    idMerchant = listOrder.get(i).idMerchant;
+                    listOrderByIdMerchant = itemCartDAO.getALLByIdMerchant(idMerchant, 2);
 
                 }
-//                String resultPrice = tvNewPrice.getText().toString().trim();
-//                if (resultPrice.equals("0đ")) {
-//                    Toast.makeText(PaymentActivity.this, NO_TO_BUY, Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                listOrder = itemCartDAO.getALL(idUser, 2);
-//
-//                Date currentTime = Calendar.getInstance().getTime();
-//                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-//                @SuppressLint("SimpleDateFormat") SimpleDateFormat fm = new SimpleDateFormat();
-//                fm.applyPattern("HH:mm:ss-z");
-//                String time = fm.format(currentTime);
-//                String date = df.format(currentTime);
-//                // depends on the date and time (split)
-//                String idOrder = date.replaceAll("-", "")
-//                        + time.substring(0, time.indexOf("-")).replaceAll(":", "");
-//
-//
-//                String idMerchant = "";
-//                List<ItemCart> listOrderByIdMerchant = null;
-//                for (int i = 0; i < listOrder.size(); i++) {
-//                    idMerchant = listOrder.get(i).idMerchant;
-//                    listOrderByIdMerchant = itemCartDAO.getALLByIdMerchant(idMerchant, 2);
-//
-//                }
-//                // true for 1 idMerchant at a time (>2 id in cart => error)
+                // true for 1 idMerchant at a time (>2 id in cart => error)
+                if (listOrderByIdMerchant != null) {
+                    for (int j = 0; j < listOrderByIdMerchant.size(); j++) {
+                        pushOrder(idOrder, idUser, idMerchant, currentTime.toString(), listOrderByIdMerchant.get(j).name, listOrderByIdMerchant.get(j).quantity
+                                , 1, listOrderByIdMerchant.get(j).price, waiting_time, listOrderByIdMerchant.get(j).notes
+                        );
+
+                    }
+                }
+                // push total price + service
 //                if (listOrderByIdMerchant != null) {
 //                    for (int j = 0; j < listOrderByIdMerchant.size(); j++) {
 //                        pushOrder(idOrder, idUser, idMerchant, currentTime.toString(), listOrderByIdMerchant.get(j).name, listOrderByIdMerchant.get(j).quantity
-//                                , 1, listOrderByIdMerchant.get(j).price, 20, listOrderByIdMerchant.get(j).notes
+//                                , 1, totalPrice, waiting_time, listOrderByIdMerchant.get(j).notes
 //                        );
+//
 //                    }
 //                }
-//                // update status item cart 2 -> 0
-//                ItemCart item = new ItemCart();
-//                item.status = 0;
-//                for (int i = 0; i < listOrder.size(); i++) {
-//                    item.id = listOrder.get(i).id;
-//                    if (itemCartDAO.updateStatus(item) > 0) {
-//                        Log.d(TAG, "update status item cart 2 -> 0");
-//                    }
-//                }
+                // update status item cart 2 -> 0
+                ItemCart item = new ItemCart();
+                item.status = 0;
+                for (int i = 0; i < listOrder.size(); i++) {
+                    item.id = listOrder.get(i).id;
+                    if (itemCartDAO.updateStatus(item) > 0) {
+                        Log.d(TAG, "update status item cart 2 -> 0");
+                    }
+                }
 
 
             }
@@ -268,7 +289,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
                 long childCount = currentData.getChildrenCount();
-                Order order = new Order((int) childCount, id, idUser, dateTime, item, quantity, status, price, waitingTime, notes);
+                Order order = new Order((int) childCount, id, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
                 Map<String, Object> mListOrder = order.toMap();
                 currentData.child(String.valueOf(childCount)).setValue(mListOrder);
                 return Transaction.success(currentData);
@@ -280,6 +301,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                     Log.d(TAG, "onComplete push order: " + "Transaction failed.");
                     Toast.makeText(PaymentActivity.this, ORDER_FAIL, Toast.LENGTH_SHORT).show();
                 } else {
+                    Log.d(TAG, "Đặt hàng thành công: " + id);
                     lnlCoupon.setVisibility(View.INVISIBLE);
                     Toast.makeText(PaymentActivity.this, ORDER_SUCCESS, Toast.LENGTH_SHORT).show();
                 }
@@ -452,6 +474,9 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (paramString.equals("service_charge_value")) {
                     service_charge = Double.parseDouble((String) Objects.requireNonNull(snapshot.getValue()));
+                }
+                if (paramString.equals("waiting_time")) {
+                    waiting_time = Integer.parseInt((String) Objects.requireNonNull(snapshot.getValue()));
                 }
                 valueContext = (String) snapshot.getValue();
                 if (textView != null) {

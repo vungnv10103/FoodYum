@@ -55,7 +55,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        if (context != null && context instanceof Activity && !((Activity) context).isFinishing()) {
+        if (context instanceof Activity && !((Activity) context).isFinishing()) {
             Product item = list.get(position);
 
             String idImage = item.img;
@@ -81,6 +81,12 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             holder.tvDesc.setText(item.description);
             holder.tvRate.setText(String.format("%.2f", item.rate));
             holder.tvQuantitySold.setText("(" + item.quantity_sold + ")");
+            if (item.status == 1){
+                Toast.makeText(context, ""+ item.name +" tạm  hết hàng", Toast.LENGTH_SHORT).show();
+            }
+            else if(item.status == 2){
+                Toast.makeText(context, ""+ item.name +" có sẵn", Toast.LENGTH_SHORT).show();
+            }
 
             float[] results = new float[1];
             double currentLongitude = 105.77553463;
