@@ -47,12 +47,18 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 import vungnv.com.foodyum.Constant;
@@ -61,6 +67,7 @@ import vungnv.com.foodyum.DAO.UsersDAO;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.adapter.OrderAdapter;
 import vungnv.com.foodyum.model.ItemCart;
+import vungnv.com.foodyum.model.ListItemInOrder;
 import vungnv.com.foodyum.model.Order;
 import vungnv.com.foodyum.utils.LocationProvider;
 
@@ -201,47 +208,104 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                     Toast.makeText(PaymentActivity.this, NO_TO_BUY, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                listOrder = itemCartDAO.getALL(idUser, 2);
 
                 Date currentTime = Calendar.getInstance().getTime();
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat fm = new SimpleDateFormat();
                 fm.applyPattern("HH:mm:ss-z");
                 String time = fm.format(currentTime);
                 String date = df.format(currentTime);
+                String dateTime = date + "-" + time;
                 // depends on the date and time (split)
-                String idOrder = date.replaceAll("-", "")
+                String idOrder = date.replaceAll("/", "")
                         + time.substring(0, time.indexOf("-")).replaceAll(":", "");
 
 
                 String sTotalPrice = tvNewPrice.getText().toString().trim();
                 double totalPrice = Double.parseDouble(sTotalPrice.substring(0, sTotalPrice.length() - 1));
-                String idMerchant = "";
-                List<ItemCart> listOrderByIdMerchant = null;
-                for (int i = 0; i < listOrder.size(); i++) {
-                    idMerchant = listOrder.get(i).idMerchant;
-                    listOrderByIdMerchant = itemCartDAO.getALLByIdMerchant(idMerchant, 2);
 
+                listOrder = itemCartDAO.getALL(idUser, 2);
+
+
+                // Check if there are more than 2 products of the same restaurant
+                Set<String> idMerchant = new HashSet<>();
+                Set<String> duplicatesIdMerchant = new HashSet<>();
+
+                for (int i = 0; i < listOrder.size(); i++) {
+                    if (!idMerchant.add(listOrder.get(i).idMerchant)) {
+                        duplicatesIdMerchant.add(listOrder.get(i).idMerchant);
+                    }
                 }
-                // true for 1 idMerchant at a time (>2 id in cart => error)
-                if (listOrderByIdMerchant != null) {
-                    for (int j = 0; j < listOrderByIdMerchant.size(); j++) {
-                        pushOrder(idOrder, idUser, idMerchant, currentTime.toString(), listOrderByIdMerchant.get(j).name, listOrderByIdMerchant.get(j).quantity
-                                , 1, listOrderByIdMerchant.get(j).price, waiting_time, listOrderByIdMerchant.get(j).notes
+                List<String> nonDuplicatesIdMerchant = new ArrayList<String>();
+                for (int i = 0; i < listOrder.size(); i++) {
+                    if (!duplicatesIdMerchant.contains(listOrder.get(i).idMerchant)) {
+                        nonDuplicatesIdMerchant.add(listOrder.get(i).idMerchant);
+                    }
+                }
+                for (String id : nonDuplicatesIdMerchant) {
+                    listOrder = itemCartDAO.getALL(idUser, id, 2);
+                    // push default
+                    for (int i = 0; i < listOrder.size(); i++) {
+                        // true for 1 idMerchant at a time (>2 id in cart => error) fixed on 23/02/2023
+                        ItemCart itemCart = listOrder.get(i);
+                        pushOrder(idOrder, idUser, itemCart.idMerchant, dateTime,
+                                itemCart.name, itemCart.quantity, 1, String.valueOf(itemCart.price), waiting_time, itemCart.notes
+                        );
+                    }
+                }
+
+                List<ListItemInOrder> listItemInOrders = new ArrayList<>();
+                if (duplicatesIdMerchant.size() > 0) {
+                    // There are duplicates in the list
+                    for (String id : duplicatesIdMerchant) {
+                        for (String id1 : idMerchant) {
+                            if (id.equals(id1)) {
+                                Log.d(TAG, "ID duplicate: " + id1);
+                                listOrder = itemCartDAO.getALL(idUser, id, 2);
+                                for (int i = 0; i < listOrder.size(); i++) {
+                                    // combined into 1 order
+//                                    Log.d(TAG, "name: " + listOrder.get(i).name);
+                                    listItemInOrders.add(new ListItemInOrder(listOrder.get(i).idMerchant, String.valueOf(listOrder.get(i).quantity), listOrder.get(i).name, String.valueOf(listOrder.get(i).price), listOrder.get(i).notes));
+                                }
+                            }
+
+                        }
+                    }
+                    List<ListItemInOrder> mergedLists1 = new ArrayList<>();
+                    Map<String, ListItemInOrder> map = new HashMap<>();
+                    for (ListItemInOrder item : listItemInOrders) {
+                        String idMerchant2 = item.idMerchant;
+                        if (map.containsKey(idMerchant2)) {
+                            ListItemInOrder mergedItem = map.get(idMerchant2);
+                            assert mergedItem != null;
+                            mergedItem.quantity = mergedItem.quantity + "-" + item.quantity;
+                            mergedItem.name = mergedItem.name + "-" + item.name;
+                            mergedItem.price = mergedItem.price + "-" + item.price;
+                            mergedItem.notes = mergedItem.notes + "-" + item.notes;
+                        } else {
+                            mergedLists1.add(item);
+                            map.put(idMerchant2, item);
+                        }
+                    }
+                    Log.d(TAG, "size: " + mergedLists1.size());
+                    for (int i = 0; i < mergedLists1.size(); i++) {
+                        Log.d(TAG, "mergedList: " + mergedLists1.get(i).toString());
+                        ListItemInOrder itemCart = mergedLists1.get(i);
+                        pushOrder(idOrder, idUser, itemCart.idMerchant, dateTime,
+                                itemCart.name, itemCart.quantity, 1, itemCart.price, waiting_time, itemCart.notes
                         );
 
                     }
+
+                } else {
+                    // There are no duplicates in the list
+                    // push default
+                    //Log.d(TAG, "list order size: " + listOrder.size());
+                    Toast.makeText(PaymentActivity.this, "one one", Toast.LENGTH_SHORT).show();
                 }
-                // push total price + service
-//                if (listOrderByIdMerchant != null) {
-//                    for (int j = 0; j < listOrderByIdMerchant.size(); j++) {
-//                        pushOrder(idOrder, idUser, idMerchant, currentTime.toString(), listOrderByIdMerchant.get(j).name, listOrderByIdMerchant.get(j).quantity
-//                                , 1, totalPrice, waiting_time, listOrderByIdMerchant.get(j).notes
-//                        );
-//
-//                    }
-//                }
-                // update status item cart 2 -> 0
+
+
+                // update status item cart 2 -> 0 (hide item bought)
                 ItemCart item = new ItemCart();
                 item.status = 0;
                 for (int i = 0; i < listOrder.size(); i++) {
@@ -282,14 +346,17 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
     }
 
     private void pushOrder(String id, String idUser, String idMerchant, String dateTime,
-                           String item, int quantity, int status, double price, int waitingTime, String notes) {
+                           String item, String quantity, int status, String price, int waitingTime, String notes) {
+
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
+
         ref.runTransaction(new Transaction.Handler() {
             @NonNull
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
                 long childCount = currentData.getChildrenCount();
-                Order order = new Order((int) childCount, id, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
+                String idNew = id + childCount;
+                Order order = new Order((int) childCount, idNew, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
                 Map<String, Object> mListOrder = order.toMap();
                 currentData.child(String.valueOf(childCount)).setValue(mListOrder);
                 return Transaction.success(currentData);
@@ -301,7 +368,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                     Log.d(TAG, "onComplete push order: " + "Transaction failed.");
                     Toast.makeText(PaymentActivity.this, ORDER_FAIL, Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.d(TAG, "Đặt hàng thành công: " + id);
+                    Log.d(TAG, "Đặt hàng thành công, id: " + id);
                     lnlCoupon.setVisibility(View.INVISIBLE);
                     Toast.makeText(PaymentActivity.this, ORDER_SUCCESS, Toast.LENGTH_SHORT).show();
                 }
@@ -309,6 +376,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         });
 
     }
+
 
     private boolean isNull() {
         return (name.length() == 0 || phoneNumber.length() == 0);
@@ -342,6 +410,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         ActivityCompat.requestPermissions(PaymentActivity.this, new String[]
                 {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
     }
+
 
     private void refreshAddress() {
         Thread t1 = new Thread() {
@@ -423,7 +492,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                             double totalPrice = 0;
                             int quantity = 0;
                             for (int i = 0; i < listOrder.size(); i++) {
-                                quantity += listOrder.get(i).quantity;
+                                quantity += Integer.parseInt(listOrder.get(i).quantity);
                                 totalPrice += listOrder.get(i).price;
                             }
                             tvQuantityItem.setText("Tạm tính(" + quantity + " món)");

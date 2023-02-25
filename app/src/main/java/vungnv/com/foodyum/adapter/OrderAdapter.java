@@ -59,19 +59,19 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                 //Toast.makeText(context, "" + item.id, Toast.LENGTH_SHORT).show();
                 boolean isSelected = holder.cbCheck.isChecked();
                 ItemCart item1 = new ItemCart();
-                item1.id = item.id;
+                item1.stt = item.stt;
                 int currentStatus = itemCartDAO.getCurrentStatus(item.id);
                 if (currentStatus != 0) {
                     if (isSelected) {
                         item1.status = 2;
-                        if (itemCartDAO.updateStatus(item1) > 0) {
+                        if (itemCartDAO.updateStatusWithStt(item1) > 0) {
                             Log.d(TAG, "update status 1 -> 2 success");
                         } else {
                             Log.d(TAG, "error update status");
                         }
                     } else {
                         item1.status = 1;
-                        if (itemCartDAO.updateStatus(item1) > 0) {
+                        if (itemCartDAO.updateStatusWithStt(item1) > 0) {
                             Log.d(TAG, "update status 2 -> 1 success");
                         } else {
                             Log.d(TAG, "error update status");
@@ -104,7 +104,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(), "" + listItem.get(getAdapterPosition()).idMerchant, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "status: " + listItem.get(getAdapterPosition()).status, Toast.LENGTH_SHORT).show();
                 }
             });
         }

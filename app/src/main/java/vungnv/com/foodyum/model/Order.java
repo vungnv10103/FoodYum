@@ -9,17 +9,17 @@ public class Order {
     public String idMerchant;
     public String dateTime;
     public String items;
-    public int quantity;
+    public String quantity;
     public int status;
-    public double price;
+    public String price;
     public int waitingTime;
     public String notes;
 
     public Order() {
     }
 
-    public Order(int pos, String id, String idUser, String idMerchant, String dateTime, String items,int quantity, int status,
-                 double price, int waitingTime, String notes) {
+    public Order(int pos, String id, String idUser, String idMerchant, String dateTime, String items,String quantity, int status,
+                 String price, int waitingTime, String notes) {
         this.pos = pos;
         this.id = id;
         this.idUser = idUser;
