@@ -48,7 +48,6 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
     private RecyclerView rcv_cart;
     public String date;
 
-    private OrderDAO orderDAO;
     private ItemCartDAO itemCartDAO;
     private List<ItemCart> listCart;
 
@@ -116,7 +115,6 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
         btnCheckout = view.findViewById(R.id.btnCheckout);
         rcv_cart = view.findViewById(R.id.rcv_cart);
         itemCartDAO = new ItemCartDAO(getContext());
-        orderDAO = new OrderDAO(getContext());
         processDialog = new SpotsDialog(getContext(), R.style.Custom2);
     }
 
@@ -153,7 +151,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                     int totalQuantity = 0;
 
                     for (int i = 0; i < listCart.size(); i++) {
-                        totalQuantity += listCart.get(i).quantity;
+                        totalQuantity += Integer.parseInt(listCart.get(i).quantity);
                         totalPrice += listCart.get(i).price;
                     }
                     final String resultButton = totalQuantity + " Món" + "  Trang thanh toán" + "  " + totalPrice + "đ";
@@ -183,7 +181,6 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
             @Override
             public void run() {
                 while (true) {
-                    final int[] temp = {0};
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
@@ -194,13 +191,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                                 rcv_cart.setAdapter(cartAdapter);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
                                 rcv_cart.setLayoutManager(linearLayoutManager);
-                                if (temp[0] == 0) {
-                                    Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
-                                }
-                                temp[0]++;
-
-
-                                return;
+                                Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
                             }
                             CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
                             rcv_cart.setAdapter(cartAdapter);
@@ -213,9 +204,6 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                         Thread.sleep(delay);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                    }
-                    if (temp[0] > 0) {
-                        break;
                     }
 
                 }

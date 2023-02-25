@@ -146,7 +146,7 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
                     double newPrice = currentPrice / currentQuantity * newQuantity;
                     ItemCart item1 = new ItemCart();
                     item1.id = id;
-                    item1.quantity = newQuantity;
+                    item1.quantity = String.valueOf(newQuantity);
                     item1.price = newPrice;
 
                     if (itemCartDAO.updateQuantityAPrice(item1) > 0) {
@@ -163,7 +163,7 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
                     item.idMerchant = idMerchant;
                     item.idUser = idUser;
                     item.dateTime = String.valueOf(currentTime);
-                    item.quantity = quantity;
+                    item.quantity = String.valueOf(quantity);
                     item.status = 1;
                     item.price = price;
                     item.notes = notes;

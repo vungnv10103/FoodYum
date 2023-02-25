@@ -8,14 +8,14 @@ public class ItemCart {
     public String idMerchant;
     public String dateTime;
     public int status;
-    public int quantity;
+    public String quantity;
     public Double price;
     public String notes;
 
     public ItemCart() {
     }
 
-    public ItemCart(int stt, String id, String name, String idUser, String idMerchant,String dateTime, int status, int quantity, Double price, String notes) {
+    public ItemCart(int stt, String id, String name, String idUser, String idMerchant,String dateTime, int status, String quantity, double price, String notes) {
         this.stt = stt;
         this.id = id;
         this.name = name;

@@ -65,7 +65,7 @@ public class OrderDAO {
             obj.dateTime = cursor.getString(cursor.getColumnIndex("dateTime"));
             obj.items = cursor.getString(cursor.getColumnIndex("items"));
             obj.status = Integer.parseInt(cursor.getString(cursor.getColumnIndex("status")));
-            obj.price = Double.parseDouble(cursor.getString(cursor.getColumnIndex("price")));
+            obj.price = cursor.getString(cursor.getColumnIndex("price"));
             obj.notes = cursor.getString(cursor.getColumnIndex("notes"));
 
             list.add(obj);

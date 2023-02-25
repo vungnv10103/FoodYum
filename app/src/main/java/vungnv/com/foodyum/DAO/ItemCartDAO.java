@@ -48,12 +48,14 @@ public class ItemCartDAO {
 
         return db.update("Cart", values, "id=?", new String[]{obj.id});
     }
+
     public int updateStatusWithStt(@NonNull ItemCart obj) {
         ContentValues values = new ContentValues();
         values.put("status", obj.status);
 
         return db.update("Cart", values, "stt=?", new String[]{String.valueOf(obj.stt)});
     }
+
     public int getCurrentStatus(String id) {
         String sql = "SELECT * FROM Cart WHERE id=?";
         List<ItemCart> list = getData(sql, id);
@@ -64,8 +66,9 @@ public class ItemCartDAO {
     public int getCurrentQuantity(String id) {
         String sql = "SELECT * FROM Cart WHERE id=?";
         List<ItemCart> list = getData(sql, id);
-        return list.get(0).quantity;
+        return Integer.parseInt(list.get(0).quantity);
     }
+
     public double getCurrentPrice(String id) {
         String sql = "SELECT * FROM Cart WHERE id=?";
         List<ItemCart> list = getData(sql, id);
@@ -85,6 +88,12 @@ public class ItemCartDAO {
         String sql = "SELECT * FROM Cart WHERE idUser=? AND status=?";
         return getData(sql, idUser, String.valueOf(status));
     }
+
+    public List<ItemCart> getALL(String idUser, String idMerchant, int status) {
+        String sql = "SELECT * FROM Cart WHERE idUser=? AND idMerchant=? AND status=?";
+        return getData(sql, idUser, idMerchant, String.valueOf(status));
+    }
+
     public List<ItemCart> getALL(String idUser, int status1, int status2) {
         String sql = "SELECT * FROM Cart WHERE idUser=? AND status BETWEEN ? and ?";
         return getData(sql, idUser, String.valueOf(status1), String.valueOf(status2));
@@ -119,7 +128,7 @@ public class ItemCartDAO {
             obj.idUser = cursor.getString(cursor.getColumnIndex("idUser"));
             obj.idMerchant = cursor.getString(cursor.getColumnIndex("idMerchant"));
             obj.dateTime = cursor.getString(cursor.getColumnIndex("dateTime"));
-            obj.quantity = Integer.parseInt(cursor.getString(cursor.getColumnIndex("quantity")));
+            obj.quantity = cursor.getString(cursor.getColumnIndex("quantity"));
             obj.status = Integer.parseInt(cursor.getString(cursor.getColumnIndex("status")));
             obj.price = Double.valueOf(cursor.getString(cursor.getColumnIndex("price")));
             obj.notes = cursor.getString(cursor.getColumnIndex("notes"));

@@ -609,7 +609,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                         temp++;
                     }
                 }
-                // check Exist
+                // check Exist (true => update quantity, false => add)
                 if (temp > 0) {
                     int currentQuantity = itemCartDAO.getCurrentQuantity(id);
                     double currentPrice = itemCartDAO.getCurrentPrice(id);
@@ -617,7 +617,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                     double newPrice = currentPrice / currentQuantity * newQuantity;
                     ItemCart item1 = new ItemCart();
                     item1.id = id;
-                    item1.quantity = newQuantity;
+                    item1.quantity = String.valueOf(newQuantity);
                     item1.price = newPrice;
 
                     if (itemCartDAO.updateQuantityAPrice(item1) > 0) {
@@ -632,7 +632,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                     item.idMerchant = idMerchant;
                     item.idUser = auth.getUid();
                     item.dateTime = String.valueOf(currentTime);
-                    item.quantity = quantity;
+                    item.quantity = String.valueOf(quantity);
                     item.status = 1;
                     item.price = price;
                     item.notes = notes;
@@ -652,6 +652,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                 }
                 dialog.dismiss();
                 isReady = true;
+                isShowBottomSheet = false;
 
             }
         });
