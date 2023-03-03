@@ -28,13 +28,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import dmax.dialog.SpotsDialog;
 import me.relex.circleindicator.CircleIndicator3;
 import vungnv.com.foodyum.Constant;
-import vungnv.com.foodyum.DAO.ProductDAO;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.activities.SearchDetailActivity;
 import vungnv.com.foodyum.activities.ShowListProductDetailActivity;
@@ -42,7 +39,6 @@ import vungnv.com.foodyum.adapter.CategoriesAdapter;
 import vungnv.com.foodyum.adapter.SlideShowAdapter;
 import vungnv.com.foodyum.databinding.FragmentHomeBinding;
 import vungnv.com.foodyum.model.Category;
-import vungnv.com.foodyum.model.Product;
 import vungnv.com.foodyum.model.ProductSlideShow;
 import vungnv.com.foodyum.utils.OnBackPressed;
 

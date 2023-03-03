@@ -21,6 +21,13 @@
         android:theme="@style/Theme.FoodYum"
         tools:targetApi="31">
         <activity
+            android:name=".ui.order.ManagerOrderActivity"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".activities.InformationUserActivity"
             android:exported="false">
             <meta-data
@@ -59,19 +66,19 @@
         </activity>
         <activity
             android:name=".activities.RegisterActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".activities.SearchDetailActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".activities.AddToCartActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".activities.OptionFilterActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".activities.ShowAllProductsByMerchantActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
 
         <service
             android:name=".fcm.MyFirebaseMessagingService"
@@ -83,7 +90,7 @@
 
         <activity
             android:name=".activities.ShowListProductDetailActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
 
         <meta-data
             android:name="preloaded_fonts"

@@ -301,7 +301,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                     // There are no duplicates in the list
                     // push default
                     //Log.d(TAG, "list order size: " + listOrder.size());
-                    Toast.makeText(PaymentActivity.this, "one one", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(PaymentActivity.this, "one one", Toast.LENGTH_SHORT).show();
                 }
 
 

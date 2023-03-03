@@ -30,14 +30,14 @@ import java.util.List;
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.activities.AddToCartActivity;
-import vungnv.com.foodyum.model.ProductRecommend;
+import vungnv.com.foodyum.model.Product;
 
 public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProductsRecommendAdapter.viewHolder> implements Constant {
     @SuppressLint("StaticFieldLeak")
     private static Context context;
-    private static List<ProductRecommend> list;
+    private static List<Product> list;
 
-    public ItemProductsRecommendAdapter(Context context, List<ProductRecommend> list) {
+    public ItemProductsRecommendAdapter(Context context, List<Product> list) {
         ItemProductsRecommendAdapter.context = context;
         ItemProductsRecommendAdapter.list = list;
     }
@@ -47,7 +47,7 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setData(ArrayList<ProductRecommend> list) {
+    public void setData(ArrayList<Product> list) {
         ItemProductsRecommendAdapter.list = list;
         notifyDataSetChanged();
 
@@ -64,7 +64,7 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         if (context instanceof Activity && !((Activity) context).isFinishing()) {
-            ProductRecommend item = list.get(position);
+            Product item = list.get(position);
 
             String idImage = item.img;
             FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -134,7 +134,7 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
                 public void onClick(View v) {
                     Intent intent = new Intent(context, AddToCartActivity.class);
                     Bundle bundle = new Bundle();
-                    ProductRecommend item = list.get(getAdapterPosition());
+                    Product item = list.get(getAdapterPosition());
 
                     bundle.putString("id", item.id);
                     bundle.putString("idMerchant", item.idUser);

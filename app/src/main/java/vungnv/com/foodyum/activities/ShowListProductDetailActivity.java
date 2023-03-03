@@ -37,8 +37,6 @@ import java.util.Map;
 import dmax.dialog.SpotsDialog;
 
 import vungnv.com.foodyum.Constant;
-import vungnv.com.foodyum.DAO.ProductDAO;
-import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.adapter.ProductsAdapter;
 import vungnv.com.foodyum.model.Product;
@@ -108,10 +106,6 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
                 tvNameCate.setText(type + " / " + map.get(type));
             }
             listProduct(type);
-//            String[] idUser = new String[]{"litfsozzDjTnguka0hXWZyr864S2", "bc8fa9T6F3QTQdnFLn1TZSvY6vx2", "d8FwJYJWAwVXzyBQr2Hh6e1ZY8c2", "fGQRuHz9mrWKXdk4oJroyhOHxaR2"};
-//            for (int i = 0; i < idUser.length; i++) {
-//                listProduct(idUser[i], type);
-//            }
 
         }
 
