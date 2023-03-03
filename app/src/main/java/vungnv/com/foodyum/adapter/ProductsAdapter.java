@@ -29,10 +29,8 @@ import java.util.List;
 
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.R;
-import vungnv.com.foodyum.activities.AddToCartActivity;
 import vungnv.com.foodyum.activities.ShowAllProductsByMerchantActivity;
 import vungnv.com.foodyum.model.Product;
-import vungnv.com.foodyum.model.ProductRecommend;
 
 
 public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHolder> implements Constant {

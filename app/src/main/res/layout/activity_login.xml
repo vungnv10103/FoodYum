@@ -146,6 +146,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/teal2"
         android:padding="14dp"
+
         android:text="@string/sign_in"
         android:textAllCaps="false"
         android:textSize="20sp"

@@ -15,16 +15,4 @@ public class ItemCart {
     public ItemCart() {
     }
 
-    public ItemCart(int stt, String id, String name, String idUser, String idMerchant,String dateTime, int status, String quantity, double price, String notes) {
-        this.stt = stt;
-        this.id = id;
-        this.name = name;
-        this.idUser = idUser;
-        this.idMerchant = idMerchant;
-        this.dateTime = dateTime;
-        this.status = status;
-        this.quantity = quantity;
-        this.price = price;
-        this.notes = notes;
-    }
 }

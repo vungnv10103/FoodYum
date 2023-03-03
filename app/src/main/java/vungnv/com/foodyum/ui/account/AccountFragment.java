@@ -45,6 +45,7 @@ import vungnv.com.foodyum.activities.InformationUserActivity;
 import vungnv.com.foodyum.activities.LoginActivity;
 import vungnv.com.foodyum.databinding.FragmentAccountBinding;
 import vungnv.com.foodyum.model.Order;
+import vungnv.com.foodyum.ui.order.ManagerOrderActivity;
 import vungnv.com.foodyum.utils.OnBackPressed;
 
 
@@ -100,20 +101,23 @@ public class AccountFragment extends Fragment implements Constant, OnBackPressed
         tvOrderWaiting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "waiting...", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "waiting...", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getContext(), ManagerOrderActivity.class));
             }
         });
         tvOrderDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "done...", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "done...", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getContext(), ManagerOrderActivity.class));
             }
         });
         tvOrderCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // getOrderCancel();
-                Toast.makeText(getContext(), "cancelled...", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "cancelled...", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getContext(), ManagerOrderActivity.class));
             }
         });
 

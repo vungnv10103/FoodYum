@@ -18,7 +18,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,7 +29,6 @@ import java.util.List;
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
-import vungnv.com.foodyum.DAO.OrderDAO;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.activities.PaymentActivity;
 import vungnv.com.foodyum.adapter.CartAdapter;
@@ -54,6 +52,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
     private boolean isReady = false;
     private final long delay = 1000;
     private SpotsDialog processDialog;
+    private int temp = 0;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -75,7 +74,6 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String idUser = auth.getUid();
 
-        // listCart(idUser);
         refresh(idUser);
         refreshButton(idUser);
 
@@ -94,8 +92,6 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                     return;
                 }
                 int quantity = Integer.parseInt(result.substring(0, result.indexOf(" ")));
-
-                // Log.d(TAG, "onClick: "+ quantity);
 
                 if (quantity == 0) {
                     Toast.makeText(getContext(), NO_CHOOSE, Toast.LENGTH_SHORT).show();
@@ -116,28 +112,6 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
         rcv_cart = view.findViewById(R.id.rcv_cart);
         itemCartDAO = new ItemCartDAO(getContext());
         processDialog = new SpotsDialog(getContext(), R.style.Custom2);
-    }
-
-
-    private void listCart(String idUser) {
-        listCart = itemCartDAO.getALL(idUser);
-        if (listCart.size() == 0) {
-            isReady = true;
-            Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
-        rcv_cart.setAdapter(cartAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-        rcv_cart.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcv_cart.getContext(),
-                linearLayoutManager.getOrientation());
-        rcv_cart.addItemDecoration(dividerItemDecoration);
-        rcv_cart.setHasFixedSize(true);
-        rcv_cart.setNestedScrollingEnabled(false);
-        isReady = true;
-
-
     }
 
     public void refreshButton(String idUser) {
@@ -191,7 +165,10 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
                                 rcv_cart.setAdapter(cartAdapter);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
                                 rcv_cart.setLayoutManager(linearLayoutManager);
-                                Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
+                                if(temp ==0){
+                                    Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
+                                }
+                                temp++;
                             }
                             CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
                             rcv_cart.setAdapter(cartAdapter);

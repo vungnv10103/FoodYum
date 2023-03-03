@@ -73,7 +73,6 @@ import vungnv.com.foodyum.adapter.ListProductsAllDetailAdapter;
 import vungnv.com.foodyum.model.ItemCart;
 import vungnv.com.foodyum.model.ListProduct;
 import vungnv.com.foodyum.model.Product;
-import vungnv.com.foodyum.model.ProductRecommend;
 import vungnv.com.foodyum.model.User;
 import vungnv.com.foodyum.utils.LocationProvider;
 import vungnv.com.foodyum.utils.NetworkChangeListener;
@@ -93,7 +92,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
 
     private final ArrayList<ListProduct> listProductAll = new ArrayList<>();
     private final ArrayList<Product> itemListProductAll = new ArrayList<>();
-    ArrayList<ProductRecommend> aListProducts = new ArrayList<>();
+    ArrayList<Product> aListProducts = new ArrayList<>();
 
     private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
@@ -449,7 +448,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 aListProducts.clear();
                 for (DataSnapshot childSnapshot1 : dataSnapshot.getChildren()) {
-                    ProductRecommend value = childSnapshot1.getValue(ProductRecommend.class);
+                    Product value = childSnapshot1.getValue(Product.class);
                     assert value != null;
                     aListProducts.add(value);
                 }

@@ -320,6 +320,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                                     assert currentUser != null;
                                     //verifyEmail();
                                     Log.d(TAG, "current user: " + currentUser.getEmail());
+                                    Log.d(TAG, "current id: " + currentUser.getUid());
                                     rememberUser(email, pass, cbRemember.isChecked());
                                     if (checkAccountExistInLocal(auth.getUid())) {
                                         saveDbUserInLocal(auth.getUid(), email, pass);

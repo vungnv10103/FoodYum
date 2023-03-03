@@ -28,17 +28,6 @@
 
     </androidx.cardview.widget.CardView>
 
-<!--    <TextView-->
-<!--        android:id="@+id/tvNameRestaurant"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="10dp"-->
-<!--        android:text="@string/default_name_restaurant"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:textSize="18sp"-->
-<!--        app:layout_constraintStart_toEndOf="@+id/card_view_product"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-
 
     <!--  ExpandableTextView Container -->
     <com.ms.square.android.expandabletextview.ExpandableTextView
