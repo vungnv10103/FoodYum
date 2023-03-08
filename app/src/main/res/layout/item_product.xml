@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="15dp"
@@ -18,13 +18,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imgProduct"
+        <RelativeLayout
             android:layout_width="95dp"
-            android:layout_height="95dp"
-            android:contentDescription="@string/todo"
-            android:scaleType="centerCrop"
-            android:src="@drawable/default_thumbnail" />
+
+            android:layout_height="95dp">
+
+            <ImageView
+                android:id="@+id/imgProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/todo"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_thumbnail" />
+
+            <TextView
+                android:id="@+id/tvOutOfStock"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignBottom="@+id/imgProduct"
+                android:gravity="center"
+                android:text="@string/out_of_stock"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
 
     </androidx.cardview.widget.CardView>
 
@@ -64,8 +83,8 @@
     <com.ms.square.android.expandabletextview.ExpandableTextView
         android:id="@+id/expand_text_view2"
         android:layout_width="wrap_content"
-        android:paddingEnd="110dp"
         android:layout_height="27dp"
+        android:paddingEnd="110dp"
         app:layout_constraintStart_toEndOf="@+id/card_view_product"
         app:layout_constraintTop_toBottomOf="@+id/expand_text_view1"
         expandableTextView:animDuration="100"
@@ -109,7 +128,6 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
         app:layout_constraintStart_toEndOf="@+id/imageView3" />
-
 
 
     <TextView

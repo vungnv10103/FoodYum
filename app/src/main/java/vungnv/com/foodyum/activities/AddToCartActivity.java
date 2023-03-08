@@ -3,7 +3,9 @@ package vungnv.com.foodyum.activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Paint;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,9 +45,11 @@ import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.model.ItemCart;
 import vungnv.com.foodyum.model.User;
+import vungnv.com.foodyum.utils.NetworkChangeListener;
 
 
 public class AddToCartActivity extends AppCompatActivity implements Constant {
+    private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
     private ImageView imgProduct;
     private TextView tvNameProduct, tvOldPrice, tvNewPrice, tvDesc;
     private EditText edNote;
@@ -313,5 +317,19 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
         if (isReady) {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener, intentFilter);
+
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
     }
 }

@@ -4,7 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +21,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
@@ -29,19 +32,22 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodyum.Constant;
-import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
+import vungnv.com.foodyum.utils.NetworkChangeListener;
 
 public class InformationUserActivity extends AppCompatActivity implements Constant {
     private Toolbar toolbar;
     private ImageView imgUser;
-    private EditText edName, edPhone, edEmail, edGender;
-    private Button btnSave, btnCancel;
+    private EditText edName, edPhone, edEmail, edOTP;
+    private Button btnSave, btnCancel, btnSendOTP;
+
+    private String verificationId;
+    private FirebaseAuth auth;
+    private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
     private SpotsDialog processDialog;
 
@@ -52,7 +58,8 @@ public class InformationUserActivity extends AppCompatActivity implements Consta
 
         init();
         setImg("1000002751");
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
         assert currentUser != null;
         String email = currentUser.getEmail();
         String name = currentUser.getDisplayName();
@@ -62,34 +69,42 @@ public class InformationUserActivity extends AppCompatActivity implements Consta
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(InformationUserActivity.this, MainActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("screen", "account");
-                intent.putExtra("idScreen", bundle);
-                startActivity(intent);
-                finishAffinity();
+//                Intent intent = new Intent(InformationUserActivity.this, MainActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("screen", "account");
+//                intent.putExtra("idScreen", bundle);
+//                startActivity(intent);
+//                finishAffinity();
+
+                onBackPressed();
 
             }
         });
         String currentName = edName.getText().toString().trim();
         String currentPhone = edPhone.getText().toString().trim();
         String currentEmail = edEmail.getText().toString().trim();
-        String currentGender = edGender.getText().toString().trim();
+        btnSendOTP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String newPhone = edPhone.getText().toString().trim();
+                sendOTP(newPhone);
+            }
+        });
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                String newName = edName.getText().toString().trim();
-                String newEmail = edEmail.getText().toString().trim();
-                String newPhone = edPhone.getText().toString().trim();
-                // Toast.makeText(InformationUserActivity.this, "old: " + currentName + " new: " + newName , Toast.LENGTH_SHORT).show();
-                if (!currentName.equals(newName)) {
-                    updateName(currentUser, newName);
-                } else if (!currentEmail.equals(newEmail)) {
-                    updateEmail(currentUser, newEmail);
-                } else if (!currentPhone.equals(newPhone)) {
-                    updatePhoneNumber(auth, newPhone);
-                }
+
+//                String newName = edName.getText().toString().trim();
+//                String newEmail = edEmail.getText().toString().trim();
+//                String newPhone = edPhone.getText().toString().trim();
+//                // Toast.makeText(InformationUserActivity.this, "old: " + currentName + " new: " + newName , Toast.LENGTH_SHORT).show();
+//                if (!currentName.equals(newName)) {
+//                    updateName(currentUser, newName);
+//                } else if (!currentEmail.equals(newEmail)) {
+//                    updateEmail(currentUser, newEmail);
+//                } else if (!currentPhone.equals(newPhone)) {
+                verifyCode(edOTP.getText().toString());
+//                }
 
             }
         });
@@ -101,9 +116,10 @@ public class InformationUserActivity extends AppCompatActivity implements Consta
         edName = findViewById(R.id.edNameUser);
         edPhone = findViewById(R.id.edPhone);
         edEmail = findViewById(R.id.edEmail);
-        edGender = findViewById(R.id.edGender);
+        edOTP = findViewById(R.id.edOTP);
         btnSave = findViewById(R.id.btnSave);
         btnCancel = findViewById(R.id.btnCancelled);
+        btnSendOTP = findViewById(R.id.btnSendOTP);
         processDialog = new SpotsDialog(InformationUserActivity.this, R.style.Custom2);
     }
 
@@ -111,6 +127,7 @@ public class InformationUserActivity extends AppCompatActivity implements Consta
         edName.setText(name);
         edPhone.setText(phone);
         edEmail.setText(email);
+        edEmail.setEnabled(false);
     }
 
     private void updateName(FirebaseUser currentUser, String newName) {
@@ -131,6 +148,17 @@ public class InformationUserActivity extends AppCompatActivity implements Consta
                 });
     }
 
+    private void updateName(String newName) {
+
+    }
+
+    private void updatePhoneNumber(String phoneNumber) {
+    }
+
+    private void updateEmail(String newEmail) {
+
+    }
+
     private void updateEmail(FirebaseUser user, String newEmail) {
         processDialog.show();
         assert user != null;
@@ -149,29 +177,107 @@ public class InformationUserActivity extends AppCompatActivity implements Consta
                 });
     }
 
-    private void updatePhoneNumber(FirebaseAuth mAuth, String phoneNumber) {
+    private void signInWithCredential(PhoneAuthCredential credential) {
+        // inside this method we are checking if
+        // the code entered is correct or not.
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // if the code is correct and the task is successful
+                            // we are sending our user to new activity.
+
+                            Toast.makeText(InformationUserActivity.this, "Thêm SĐT thành công", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            // if the code is not correct then we are
+                            // displaying an error message to the user.
+                            Toast.makeText(InformationUserActivity.this, "Thêm SĐT thất bại", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void sendOTP(String phoneNumber) {
         processDialog.show();
 
         PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(mAuth)
+                PhoneAuthOptions.newBuilder(auth)
                         .setPhoneNumber(phoneNumber)       // Phone number to verify
                         .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                         .setActivity(this)                 // Activity (for callback binding)
-                        .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                            @Override
-                            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                                Log.d(TAG, "onVerificationCompleted: " + "success");
-                            }
-
-                            @Override
-                            public void onVerificationFailed(@NonNull FirebaseException e) {
-                                Log.d(TAG, "onVerificationFailed: " + e.getMessage());
-
-                            }
-                        })          // OnVerificationStateChangedCallbacks
+                        .setCallbacks(mCallBack)            // OnVerificationStateChangedCallbacks
                         .build();
         PhoneAuthProvider.verifyPhoneNumber(options);
         processDialog.dismiss();
+    }
+
+    // callback method is called on phone auth provider
+    private final PhoneAuthProvider.OnVerificationStateChangedCallbacks
+            mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            verificationId = s;
+        }
+
+        @Override
+        public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+            final String code = phoneAuthCredential.getSmsCode();
+            // checking if the code
+            // is null or not.
+            if (code != null) {
+                // if the code is not null then
+                // we are setting that code to
+                // our OTP edittext field.
+                edOTP.setText(code);
+
+                // after setting this code
+                // to OTP edittext field we
+                // are calling our verifycode method.
+                verifyCode(code);
+            }
+        }
+
+        @Override
+        public void onVerificationFailed(@NonNull FirebaseException e) {
+            Log.d(TAG, "onVerificationFailed: " + e.getMessage());
+        }
+    };
+
+    // below method is use to verify code from Firebase.
+    private void verifyCode(String code) {
+        // below line is used for getting
+        // credentials from our verification id and code.
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
+
+        // after getting credential we are
+        // calling sign in method.
+        signInWithCredential(credential);
+        signInWithPhoneAuthCredential(credential);
+    }
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+
+                            FirebaseUser user = task.getResult().getUser();
+                            Log.d(TAG, "onComplete: " + user);
+                            // Update UI
+                        } else {
+                            // Sign in failed, display a message and update the UI
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                // The verification code entered was invalid
+                            }
+                        }
+                    }
+                });
     }
 
     private void setImg(String idImage) {
@@ -195,5 +301,17 @@ public class InformationUserActivity extends AppCompatActivity implements Consta
             }
         });
         processDialog.dismiss();
+    }
+    @Override
+    protected void onStart() {
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener, intentFilter);
+
+        super.onStart();
+    }
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
     }
 }

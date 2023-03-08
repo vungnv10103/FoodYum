@@ -9,11 +9,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -21,6 +24,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -64,15 +68,19 @@ import java.util.TimerTask;
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
 import vungnv.com.foodyum.DAO.UsersDAO;
+import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.adapter.OrderAdapter;
 import vungnv.com.foodyum.model.ItemCart;
 import vungnv.com.foodyum.model.ListItemInOrder;
 import vungnv.com.foodyum.model.Order;
 import vungnv.com.foodyum.utils.LocationProvider;
+import vungnv.com.foodyum.utils.NetworkChangeListener;
 
-public class PaymentActivity extends AppCompatActivity implements Constant {
+public class PaymentActivity extends AppCompatActivity implements Constant, SwipeRefreshLayout.OnRefreshListener {
     private Toolbar toolbar;
+    private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
+    private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout selectAddress, lnlCoupon;
     private ConstraintLayout ctlMethodPayment;
     private RecyclerView rcvOrder, rcvCoupon;
@@ -94,6 +102,9 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
     private String name = "";
     private String phoneNumber = "";
 
+    private static final String idUser = FirebaseAuth.getInstance().getUid();
+    private FirebaseAuth auth;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,10 +112,11 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         setContentView(R.layout.activity_payment);
 
         init();
+        swipeRefreshLayout.setColorSchemeColors(
+                getResources().getColor(R.color.red),
+                getResources().getColor(R.color.green));
 
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        String idUser = auth.getUid();
+        auth = FirebaseAuth.getInstance();
         String email = Objects.requireNonNull(auth.getCurrentUser()).getEmail();
         name = usersDAO.getName(email);
         phoneNumber = usersDAO.getPhone(email);
@@ -115,8 +127,9 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
             tvPhoneNumber.setText(phoneNumber);
         }
 
-        refreshAddress();
-        refreshList(idUser);
+        // refreshAddress();
+        getListItemInOrder();
+
 
         // get service_charge_value
         setContext(null, "service_charge_value");
@@ -128,7 +141,12 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                Intent intent = new Intent(PaymentActivity.this, MainActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("screen", "cart");
+                intent.putExtra("idScreen", bundle);
+                startActivity(intent);
+                finishAffinity();
 
             }
         });
@@ -196,12 +214,12 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         btnPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // boolean checkInfo = isNull();
 
-//                if (isNull()) {
-//                     showConfirmDialog();
-//
-//                }
+
+                if (isNull()) {
+                    showConfirmDialog();
+                    return;
+                }
 
                 String resultPrice = tvNewPrice.getText().toString().trim();
                 if (resultPrice.equals("0đ")) {
@@ -264,7 +282,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                                 listOrder = itemCartDAO.getALL(idUser, id, 2);
                                 for (int i = 0; i < listOrder.size(); i++) {
                                     // combined into 1 order
-//                                    Log.d(TAG, "name: " + listOrder.get(i).name);
                                     listItemInOrders.add(new ListItemInOrder(listOrder.get(i).idMerchant, String.valueOf(listOrder.get(i).quantity), listOrder.get(i).name, String.valueOf(listOrder.get(i).price), listOrder.get(i).notes));
                                 }
                             }
@@ -297,14 +314,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
 
                     }
 
-                } else {
-                    // There are no duplicates in the list
-                    // push default
-                    //Log.d(TAG, "list order size: " + listOrder.size());
-                   // Toast.makeText(PaymentActivity.this, "one one", Toast.LENGTH_SHORT).show();
                 }
-
-
                 // update status item cart 2 -> 0 (hide item bought)
                 ItemCart item = new ItemCart();
                 item.status = 0;
@@ -315,13 +325,16 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
                     }
                 }
 
-
+                getListItemInOrder();
             }
+
         });
     }
 
 
     private void init() {
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout_payment);
+        swipeRefreshLayout.setOnRefreshListener(this);
         toolbar = findViewById(R.id.toolBarPayment);
         usersDAO = new UsersDAO(getApplicationContext());
         selectAddress = findViewById(R.id.selectLocation);
@@ -392,8 +405,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         btnConfirm = dialog.findViewById(R.id.btnConfirm);
         btnConfirm.setOnClickListener(v1 -> {
             // update information
-            Toast.makeText(this, "updating...", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
+            startActivity(new Intent(PaymentActivity.this, InformationUserActivity.class));
         });
         btnCancel.setOnClickListener(v12 -> dialog.dismiss());
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
@@ -409,6 +422,64 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
     private void askPermission() {
         ActivityCompat.requestPermissions(PaymentActivity.this, new String[]
                 {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+    }
+
+    public void demo(String text) {
+        Toast.makeText(this, "" + text, Toast.LENGTH_SHORT).show();
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void getListItemInOrder() {
+        listOrder = itemCartDAO.getALL(idUser, 2);
+        if (listOrder.size() == 0) {
+            OrderAdapter orderAdapter = new OrderAdapter(getApplicationContext(), listOrder, PaymentActivity.this);
+            rcvOrder.setAdapter(orderAdapter);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
+            rcvOrder.setLayoutManager(linearLayoutManager);
+            tvQuantityItem.setText(DEFAULT_TV_QUANTITY);
+            tvTotalPrice.setText(0 + "đ");
+            tvFee.setText(0 + "đ");
+            tvOldPrice.setVisibility(View.INVISIBLE);
+            tvNewPrice.setText(0 + "đ");
+            return;
+        }
+        OrderAdapter orderAdapter = new OrderAdapter(getApplicationContext(), listOrder, PaymentActivity.this);
+        rcvOrder.setAdapter(orderAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
+        rcvOrder.setLayoutManager(linearLayoutManager);
+
+        double totalPrice = 0;
+        int quantity = 0;
+        for (int i = 0; i < listOrder.size(); i++) {
+            quantity += Integer.parseInt(listOrder.get(i).quantity);
+            totalPrice += listOrder.get(i).price;
+        }
+        tvQuantityItem.setText("Tạm tính(" + quantity + " món)");
+        tvTotalPrice.setText(totalPrice + "đ");
+        fee = totalPrice / 100 * 20;
+        tvFee.setText(fee + "đ");
+        double oldPrice = totalPrice + fee;
+        Bundle data = getIntent().getBundleExtra("data-coupon");
+        if (data == null) {
+            lnlCoupon.setVisibility(View.INVISIBLE);
+            tvOldPrice.setVisibility(View.INVISIBLE);
+            tvNewPrice.setText(oldPrice + "đ");
+        } else {
+            lnlCoupon.setVisibility(View.VISIBLE);
+            String idCoupon = data.getString("id");
+
+            double discount = data.getDouble("discount") * totalPrice / 100;
+
+            tvCoupon.setText(discount + "đ");
+            tvAddCoupon.setText(idCoupon);
+
+            tvOldPrice.setVisibility(View.VISIBLE);
+
+            tvOldPrice.setText(oldPrice + "đ");
+            tvNewPrice.setText(oldPrice - discount + "đ");
+
+        }
+
     }
 
 
@@ -460,82 +531,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
         t1.start();
     }
 
-    private void refreshList(String idUser) {
-        Thread t1 = new Thread() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void run() {
-
-                while (true) {
-
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listOrder = itemCartDAO.getALL(idUser, 2);
-                            if (listOrder.size() == 0) {
-                                OrderAdapter orderAdapter = new OrderAdapter(getApplicationContext(), listOrder);
-                                rcvOrder.setAdapter(orderAdapter);
-                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
-                                rcvOrder.setLayoutManager(linearLayoutManager);
-                                tvQuantityItem.setText(DEFAULT_TV_QUANTITY);
-                                tvTotalPrice.setText(0 + "đ");
-                                tvFee.setText(0 + "đ");
-                                tvOldPrice.setVisibility(View.INVISIBLE);
-                                tvNewPrice.setText(0 + "đ");
-                                return;
-                            }
-                            OrderAdapter orderAdapter = new OrderAdapter(getApplicationContext(), listOrder);
-                            rcvOrder.setAdapter(orderAdapter);
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
-                            rcvOrder.setLayoutManager(linearLayoutManager);
-
-                            double totalPrice = 0;
-                            int quantity = 0;
-                            for (int i = 0; i < listOrder.size(); i++) {
-                                quantity += Integer.parseInt(listOrder.get(i).quantity);
-                                totalPrice += listOrder.get(i).price;
-                            }
-                            tvQuantityItem.setText("Tạm tính(" + quantity + " món)");
-                            tvTotalPrice.setText(totalPrice + "đ");
-                            fee = totalPrice / 100 * 20;
-                            tvFee.setText(fee + "đ");
-                            double oldPrice = totalPrice + fee;
-                            Bundle data = getIntent().getBundleExtra("data-coupon");
-                            if (data == null) {
-                                lnlCoupon.setVisibility(View.INVISIBLE);
-                                tvOldPrice.setVisibility(View.INVISIBLE);
-                                tvNewPrice.setText(oldPrice + "đ");
-                            } else {
-                                lnlCoupon.setVisibility(View.VISIBLE);
-                                String idCoupon = data.getString("id");
-
-                                double discount = data.getDouble("discount") * totalPrice / 100;
-
-                                tvCoupon.setText(discount + "đ");
-                                tvAddCoupon.setText(idCoupon);
-
-                                tvOldPrice.setVisibility(View.VISIBLE);
-
-                                tvOldPrice.setText(oldPrice + "đ");
-                                tvNewPrice.setText(oldPrice - discount + "đ");
-
-                            }
-
-                        }
-                    });
-
-
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        t1.start();
-    }
-
     private void setContext(TextView textView, String paramString) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("asset_string").child(paramString);
         ref.addValueEventListener(new ValueEventListener() {
@@ -564,5 +559,58 @@ public class PaymentActivity extends AppCompatActivity implements Constant {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onRefresh() {
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            swipeRefreshLayout.setRefreshing(false);
+            String userName = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
+            tvFullName.setText(userName);
+            if (ContextCompat.checkSelfPermission(PaymentActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                LocationProvider locationManager = new LocationProvider(PaymentActivity.this);
+                locationManager.getLastLocation(new LocationProvider.OnLocationChangedListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        if (location != null) {
+                            Geocoder geocoder = new Geocoder(PaymentActivity.this, Locale.getDefault());
+                            List<Address> addresses;
+                            try {
+                                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                String mLocation = addresses.get(0).getAddressLine(0);
+                                double currentLongitude = addresses.get(0).getLongitude();
+                                double currentLatitude = addresses.get(0).getLatitude();
+                                final String coordinate = currentLongitude + "-" + currentLatitude;
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        tvAddress.setText(mLocation);
+                                    }
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            } else {
+                askPermission();
+            }
+
+        }, 1500);
+
+    }
+    @Override
+    protected void onStart() {
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener, intentFilter);
+
+        super.onStart();
+    }
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
     }
 }

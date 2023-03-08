@@ -17,13 +17,33 @@
         android:layout_gravity="center"
         app:cardCornerRadius="10dp">
 
-        <ImageView
-            android:id="@+id/imgProduct2"
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/todo"
-            android:scaleType="centerCrop"
-            android:src="@drawable/default_thumbnail" />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgProduct2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/todo"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_thumbnail" />
+
+
+            <TextView
+                android:id="@+id/tvOutOfStock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/imgProduct2"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:text="@string/out_of_stock"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
 
     </androidx.cardview.widget.CardView>
 
@@ -37,7 +57,7 @@
 
         <!-- simple text view  -->
         <TextView
-           android:id="@+id/expandable_text"
+            android:id="@+id/expandable_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto"
@@ -77,9 +97,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:textSize="15sp"
             android:text="@string/default_price"
-            android:textColor="@color/gray" />
+            android:textColor="@color/gray"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView

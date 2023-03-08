@@ -2,6 +2,7 @@ package vungnv.com.foodyum.ui.account;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -66,6 +68,7 @@ public class AccountFragment extends Fragment implements Constant, OnBackPressed
 
     private SpotsDialog processDialog;
 
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -75,11 +78,19 @@ public class AccountFragment extends Fragment implements Constant, OnBackPressed
 
 
         init(root);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        String name = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        assert currentUser != null;
+        String img = String.valueOf(currentUser.getPhotoUrl());
+        String name = currentUser.getDisplayName();
+        String phone = currentUser.getPhoneNumber();
         if (name != null) {
             tvNameUser.setText(name);
         }
+        else {
+            tvNameUser.setText("UserName");
+        }
+        Toast.makeText(getContext(), "phone: " + phone, Toast.LENGTH_SHORT).show();
+
         setImg("1000002751");
 
 
@@ -202,36 +213,6 @@ public class AccountFragment extends Fragment implements Constant, OnBackPressed
 
         // save
         editor.apply();
-    }
-
-    private void getOrderCancel() {
-
-        processDialog.show();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child("yJF6rMabmSPaMHbcddWQONEWsAq1");
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    Order order = ds.getValue(Order.class);
-                    assert order != null;
-                    if (order.status == 1) {
-                        aListOrder.add(order);
-                    }
-
-                }
-                for (int i = 0; i < aListOrder.size(); i++) {
-                    Log.d(TAG, "data: " + aListOrder.get(i).items);
-                }
-                processDialog.dismiss();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d(TAG, "onCancelled: " + error.getMessage());
-                processDialog.dismiss();
-            }
-        });
     }
 
     @Override

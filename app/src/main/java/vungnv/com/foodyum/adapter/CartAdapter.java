@@ -29,8 +29,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
     private UsersDAO usersDAO;
     private ItemCartDAO itemCartDAO;
 
-    public CartAdapter(Context context, List<ItemCart> listItem) {
+    private CartFragment cartFragment;
+
+
+    public CartAdapter(Context context, List<ItemCart> listItem, CartFragment cartFragment) {
         this.context = context;
+        this.cartFragment = cartFragment;
         CartAdapter.listItem = listItem;
     }
 
@@ -80,7 +84,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
                         Log.d(TAG, "error update status");
                     }
                 }
-
+                cartFragment.refreshButton();
 
             }
         });
@@ -112,7 +116,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
                 animationIncrease(currentQuantity, holder.imgIncrease);
                 animationDecrease(currentQuantity, holder.imgDecrease);
 
-
+                cartFragment.refreshButton();
             }
         });
         holder.imgDecrease.setOnClickListener(new View.OnClickListener() {
@@ -138,6 +142,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> im
                 animationIncrease(currentQuantity, holder.imgIncrease);
                 animationDecrease(currentQuantity, holder.imgDecrease);
 
+                cartFragment.refreshButton();
             }
         });
 

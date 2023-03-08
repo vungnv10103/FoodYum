@@ -53,6 +53,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
     private final long delay = 1000;
     private SpotsDialog processDialog;
     private int temp = 0;
+    private static final String idUser = FirebaseAuth.getInstance().getUid();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -71,11 +72,9 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
 
             }
         });
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        String idUser = auth.getUid();
 
-        refresh(idUser);
-        refreshButton(idUser);
+        showListInCart();
+        refreshButton();
 
         imgOrderHistory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,81 +113,41 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
         processDialog = new SpotsDialog(getContext(), R.style.Custom2);
     }
 
-    public void refreshButton(String idUser) {
-        Thread t1 = new Thread() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void run() {
-                while (true) {
-                    listCart = itemCartDAO.getALL(idUser, 2);
-                    double totalPrice = 0;
-                    int totalQuantity = 0;
-
-                    for (int i = 0; i < listCart.size(); i++) {
-                        totalQuantity += Integer.parseInt(listCart.get(i).quantity);
-                        totalPrice += listCart.get(i).price;
-                    }
-                    final String resultButton = totalQuantity + " Món" + "  Trang thanh toán" + "  " + totalPrice + "đ";
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            btnCheckout.setText(resultButton);
-                            isReady = true;
-                        }
-                    });
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+    public void showListInCart() {
+        listCart = itemCartDAO.getALL(idUser, 1, 2);
+        if (listCart.size() == 0) {
+            isReady = true;
+            CartAdapter cartAdapter = new CartAdapter(getContext(), listCart, this);
+            rcv_cart.setAdapter(cartAdapter);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+            rcv_cart.setLayoutManager(linearLayoutManager);
+            if (temp == 0) {
+                Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
             }
-        };
-        t1.start();
+            temp++;
+        }
+        CartAdapter cartAdapter = new CartAdapter(getContext(), listCart, this);
+        rcv_cart.setAdapter(cartAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        rcv_cart.setLayoutManager(linearLayoutManager);
+        isReady = true;
+
 
     }
 
-    public void refresh(String idUser) {
-        Thread t1 = new Thread() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void run() {
-                while (true) {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listCart = itemCartDAO.getALL(idUser, 1, 2);
-                            if (listCart.size() == 0) {
-                                isReady = true;
-                                CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
-                                rcv_cart.setAdapter(cartAdapter);
-                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-                                rcv_cart.setLayoutManager(linearLayoutManager);
-                                if(temp ==0){
-                                    Toast.makeText(getContext(), CART_EMPTY, Toast.LENGTH_SHORT).show();
-                                }
-                                temp++;
-                            }
-                            CartAdapter cartAdapter = new CartAdapter(getContext(), listCart);
-                            rcv_cart.setAdapter(cartAdapter);
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-                            rcv_cart.setLayoutManager(linearLayoutManager);
-                            isReady = true;
-                        }
-                    });
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+    public void refreshButton() {
+        listCart = itemCartDAO.getALL(idUser, 2);
+        double totalPrice = 0;
+        int totalQuantity = 0;
 
-                }
-            }
-        };
-        t1.start();
+        for (int i = 0; i < listCart.size(); i++) {
+            totalQuantity += Integer.parseInt(listCart.get(i).quantity);
+            totalPrice += listCart.get(i).price;
+        }
+        final String resultButton = totalQuantity + " Món" + "  Trang thanh toán" + "  " + totalPrice + "đ";
+        btnCheckout.setText(resultButton);
+        isReady = true;
     }
-
 
     @Override
     public void onBackPressed() {

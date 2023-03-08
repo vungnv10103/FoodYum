@@ -21,15 +21,19 @@ import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
 import vungnv.com.foodyum.DAO.UsersDAO;
 import vungnv.com.foodyum.R;
+import vungnv.com.foodyum.activities.PaymentActivity;
 import vungnv.com.foodyum.model.ItemCart;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> implements Constant {
     private final Context context;
+    private static PaymentActivity payment;
     private static List<ItemCart> listItem;
     private ItemCartDAO itemCartDAO;
 
-    public OrderAdapter(Context context, List<ItemCart> listItem) {
+
+    public OrderAdapter(Context context, List<ItemCart> listItem, PaymentActivity paymentActivity) {
         this.context = context;
+        this.payment = paymentActivity;
         OrderAdapter.listItem = listItem;
     }
 
@@ -60,26 +64,24 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                 boolean isSelected = holder.cbCheck.isChecked();
                 ItemCart item1 = new ItemCart();
                 item1.stt = item.stt;
-                int currentStatus = itemCartDAO.getCurrentStatus(item.id);
-                if (currentStatus != 0) {
-                    if (isSelected) {
-                        item1.status = 2;
-                        if (itemCartDAO.updateStatusWithStt(item1) > 0) {
-                            Log.d(TAG, "update status 1 -> 2 success");
-                        } else {
-                            Log.d(TAG, "error update status");
-                        }
+                if (isSelected) {
+                    item1.status = 2;
+                    if (itemCartDAO.updateStatusWithStt(item1) > 0) {
+                        Log.d(TAG, "update status 1 -> 2 success");
                     } else {
-                        item1.status = 1;
-                        if (itemCartDAO.updateStatusWithStt(item1) > 0) {
-                            Log.d(TAG, "update status 2 -> 1 success");
-                        } else {
-                            Log.d(TAG, "error update status");
-                        }
+                        Log.d(TAG, "error update status");
+                    }
+                } else {
+                    item1.status = 1;
+                    if (itemCartDAO.updateStatusWithStt(item1) > 0) {
+                        Log.d(TAG, "update status 2 -> 1 success");
+                    } else {
+                        Log.d(TAG, "error update status");
                     }
                 }
-
+                payment.getListItemInOrder();
             }
+
         });
     }
 
@@ -104,6 +106,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     Toast.makeText(v.getContext(), "status: " + listItem.get(getAdapterPosition()).status, Toast.LENGTH_SHORT).show();
                 }
             });

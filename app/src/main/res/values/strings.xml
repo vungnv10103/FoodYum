@@ -71,7 +71,7 @@
     <string name="default_calo">70 calories</string>
     <string name="forgot_pass">Quên mật khẩu</string>
     <string name="submit">Submit</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel">Huỷ</string>
     <string name="default_name_restaurant">Cơm Rang - Mì Xào - Trần Quốc Hoàn </string>
     <string name="please_wait">Xin chờ</string>
     <string name="dot">•</string>
@@ -118,6 +118,8 @@
     <string name="gender">Giới tính</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="save">Lưu</string>
+    <string name="out_of_stock">Tạm hết hàng</string>
 
 
 </resources>

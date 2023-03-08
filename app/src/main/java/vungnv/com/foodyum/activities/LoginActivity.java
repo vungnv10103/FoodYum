@@ -104,6 +104,7 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         setContentView(R.layout.activity_login);
 
         init();
+
         getToken();
         //createNotification.mCreateNotification(LoginActivity.this, "Tiêu đề", "Nội dung");
         String currentLanguage = getResources().getConfiguration().locale.getLanguage();

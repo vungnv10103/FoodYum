@@ -73,9 +73,8 @@
                     android:fontFamily="@font/roboto_bold"
                     android:text="@string/default_name_restaurant"
                     android:textColor="@color/black"
-                    android:textSize="24sp"
 
-                    />
+                    android:textSize="24sp" />
 
                 <TextView
                     android:id="@+id/tvOldPrice"

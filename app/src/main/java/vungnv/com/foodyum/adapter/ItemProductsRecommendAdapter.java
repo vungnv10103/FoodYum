@@ -86,6 +86,11 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
                 }
             });
             holder.tvTitle.setText(item.name);
+            if (item.status == 1) {
+                holder.tvOutOfStock.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvOutOfStock.setVisibility(View.INVISIBLE);
+            }
             double discount = item.discount;
             double oldPrice = item.price;
 
@@ -117,7 +122,7 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
 
     public static class viewHolder extends RecyclerView.ViewHolder {
         ExpandableTextView tvTitle;
-        TextView tvDiscount, tvPriceOld, tvPriceNew;
+        TextView tvOutOfStock, tvDiscount, tvPriceOld, tvPriceNew;
         ImageView img;
 
         public viewHolder(@NonNull View itemView) {
@@ -125,6 +130,7 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
             img = itemView.findViewById(R.id.imgProduct2);
             //tvTitle = itemView.findViewById(R.id.tvNameRestaurant);
             tvTitle = itemView.findViewById(R.id.expand_text_view).findViewById(R.id.expand_text_view);
+            tvOutOfStock = itemView.findViewById(R.id.tvOutOfStock);
             tvDiscount = itemView.findViewById(R.id.tvDiscount);
             tvPriceOld = itemView.findViewById(R.id.tvPriceOld);
             tvPriceNew = itemView.findViewById(R.id.tvPrice);
@@ -132,9 +138,13 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Product item = list.get(getAdapterPosition());
+                    if (item.status == 1) {
+                        return;
+                    }
                     Intent intent = new Intent(context, AddToCartActivity.class);
                     Bundle bundle = new Bundle();
-                    Product item = list.get(getAdapterPosition());
+
 
                     bundle.putString("id", item.id);
                     bundle.putString("idMerchant", item.idUser);

@@ -79,12 +79,11 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             holder.tvDesc.setText(item.description);
             holder.tvRate.setText(String.format("%.2f", item.rate));
             holder.tvQuantitySold.setText("(" + item.quantity_sold + ")");
-//            if (item.status == 1){
-//                Toast.makeText(context, ""+ item.name +" tạm  hết hàng", Toast.LENGTH_SHORT).show();
-//            }
-//            else if(item.status == 2){
-//                Toast.makeText(context, ""+ item.name +" có sẵn", Toast.LENGTH_SHORT).show();
-//            }
+            if (item.status == 1) {
+                holder.tvOutOfStock.setVisibility(View.VISIBLE);
+            } else if (item.status == 2) {
+                holder.tvOutOfStock.setVisibility(View.INVISIBLE);
+            }
 
             float[] results = new float[1];
             double currentLongitude = 105.77553463;
@@ -109,7 +108,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
     }
 
     public static class viewHolder extends RecyclerView.ViewHolder {
-        TextView tvRate, tvQuantitySold, tvDistance;
+        TextView tvOutOfStock, tvRate, tvQuantitySold, tvDistance;
         ExpandableTextView tvDesc, tvTitle;
         ImageView img;
 
@@ -117,6 +116,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             super(itemView);
             img = itemView.findViewById(R.id.imgProduct);
             //tvTitle = itemView.findViewById(R.id.tvNameRestaurant);
+            tvOutOfStock = itemView.findViewById(R.id.tvOutOfStock);
             tvTitle = itemView.findViewById(R.id.expand_text_view1).findViewById(R.id.expand_text_view1);
             tvDesc = itemView.findViewById(R.id.expand_text_view2).findViewById(R.id.expand_text_view2);
             tvRate = itemView.findViewById(R.id.tvRateProduct);
@@ -131,7 +131,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
                     Bundle bundle = new Bundle();
                     Product item = list.get(getAdapterPosition());
 
-                    bundle.putBoolean("isShowBottomSheet", true);
+                    bundle.putBoolean("isShowBottomSheet", item.status != 1);
                     bundle.putString("id", item.id);
                     bundle.putString("idMerchant", item.idUser);
                     intent.putExtra("data", bundle);

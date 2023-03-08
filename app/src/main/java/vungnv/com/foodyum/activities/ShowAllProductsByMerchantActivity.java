@@ -450,7 +450,10 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
                 for (DataSnapshot childSnapshot1 : dataSnapshot.getChildren()) {
                     Product value = childSnapshot1.getValue(Product.class);
                     assert value != null;
-                    aListProducts.add(value);
+                    if (value.status != 0) {
+                        aListProducts.add(value);
+                    }
+
                 }
                 if (aListProducts.size() == 0) {
                     Toast.makeText(ShowAllProductsByMerchantActivity.this, NO_DATA, Toast.LENGTH_SHORT).show();
