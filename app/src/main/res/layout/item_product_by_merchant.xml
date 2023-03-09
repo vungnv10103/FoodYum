@@ -31,15 +31,16 @@
 
 
             <TextView
+
                 android:id="@+id/tvOutOfStock"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignBottom="@+id/imgProduct2"
                 android:gravity="center"
                 android:paddingBottom="5dp"
                 android:text="@string/out_of_stock"
                 android:textColor="@color/black"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:visibility="invisible" />
 
         </RelativeLayout>
