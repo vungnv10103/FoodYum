@@ -1,19 +1,26 @@
 package vungnv.com.foodyum.activities;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +38,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -64,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
     FusedLocationProviderClient fusedLocationProviderClient;
 
     private UsersDAO usersDAO;
+    private FirebaseAuth auth;
     private final EncryptingPassword encryptingPassword = new EncryptingPassword();
     private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
@@ -82,7 +91,7 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
                 String email = edEmail.getText().toString().trim();
                 String pass = edPass.getText().toString().trim();
                 String confirmPass = edConfirmPass.getText().toString().trim();
-                FirebaseAuth auth = FirebaseAuth.getInstance();
+                auth = FirebaseAuth.getInstance();
                 if (validate(email, pass, confirmPass)) {
                     if (checkEmail(email)) {
                         auth.createUserWithEmailAndPassword(email, pass)
@@ -93,14 +102,12 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
                                             verifyEmail();
 
                                             if (checkAccountExist(auth.getUid())) {
-                                                upLoadUser(auth.getUid(), email, pass);
+                                                // add dialog
                                                 saveDbUserInLocal(auth.getUid(), email, pass);
+                                                addInformation(auth.getUid(), email, pass);
+
                                             }
-                                            rememberUser(email, pass);
-                                            progressDialog.dismiss();
-                                            Toast.makeText(RegisterActivity.this, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                                            finishAffinity();
+
                                         } else {
                                             progressDialog.dismiss();
                                             Toast.makeText(RegisterActivity.this, REGISTER_FAIL + "\n" + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
@@ -162,7 +169,8 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
         }
         return true;
     }
-    private void verifyEmail(){
+
+    private void verifyEmail() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
@@ -207,21 +215,11 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
         return temp <= 0;
     }
 
-    private void upLoadUser(String id, String email, String pass) {
+    private void addInformation(String id, String email, String pass) {
 
         String encryptPass = encryptingPassword.EncryptPassword(pass);
-        User user = new User(email, encryptPass);
-        Map<String, Object> mListUser = user.toMap();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference();
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("list_user_client/" + id, mListUser);
-        reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                Log.d(TAG, "upload user to firebase success: ");
-            }
-        });
+        showDialogAddInfo(id, email, pass, encryptPass);
+
     }
 
     private void rememberUser(String email, String pass) {
@@ -233,6 +231,88 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
         editor.putBoolean("REMEMBER", true);
 
         editor.apply();
+    }
+
+    private void showDialogAddInfo(String id, String email, String pass, String encryptPass) {
+        Dialog dialog = new Dialog(RegisterActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_add_info);
+        dialog.setCancelable(false);
+
+
+        EditText edNameUser = dialog.findViewById(R.id.edNameUser);
+        EditText edPhone = dialog.findViewById(R.id.edPhone);
+        EditText edEmail = dialog.findViewById(R.id.edEmail);
+        edEmail.setText(email);
+        Button btnSave = dialog.findViewById(R.id.btnSave);
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String phone = edPhone.getText().toString().trim();
+                String name = edNameUser.getText().toString().trim();
+
+                User user = new User(email, name, phone, "", encryptPass);
+                Map<String, Object> mListUser = user.toMap();
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference reference = database.getReference();
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("list_user_client/" + id, mListUser);
+                reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                        Log.d(TAG, "upload user to firebase success: ");
+                        rememberUser(email, pass);
+                        updateName(Objects.requireNonNull(auth.getCurrentUser()), name);
+                        updatePhone(email, phone);
+                        dialog.dismiss();
+                        progressDialog.dismiss();
+                        Toast.makeText(RegisterActivity.this, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                        finishAffinity();
+                    }
+                });
+            }
+        });
+
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+    private void updateName(FirebaseUser currentUser, String newName) {
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(newName)
+                .build();
+        currentUser.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            User user = new User();
+                            user.email = currentUser.getEmail();
+                            user.name = newName;
+
+                            if (usersDAO.updateName(user) > 0) {
+                                Log.d(TAG, "User profile updated.");
+                            }
+
+                        }
+                    }
+                });
+    }
+    private void updatePhone(String email, String phone) {
+
+        User user = new User();
+        user.email = email;
+        user.phoneNumber = phone;
+
+        if (usersDAO.updatePhone(user) > 0) {
+            Toast.makeText(this, "Cập nhật SĐT thành công", Toast.LENGTH_SHORT).show();
+            onBackPressed();
+        }
+
     }
 
     private void getLastLocation() {

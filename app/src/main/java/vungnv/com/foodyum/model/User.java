@@ -15,14 +15,20 @@ public class User {
     public String feedback;
 
 
-    public User(String email, String pass) {
+    public User(String email, String name, String phoneNumber, String img, String pass) {
         this.email = email;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.img = img;
         this.pass = pass;
     }
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("email", email);
+        result.put("name", name);
+        result.put("phoneNumber", phoneNumber);
+        result.put("img", img);
         result.put("pass", pass);
         return result;
     }

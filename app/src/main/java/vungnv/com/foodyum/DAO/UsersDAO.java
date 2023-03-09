@@ -37,9 +37,14 @@ public class UsersDAO {
     }
 
 
-    public int updateProfile(User obj) {
+    public int updateName(User obj) {
         ContentValues values = new ContentValues();
         values.put("name", obj.name);
+
+        return db.update("User", values, "email=?", new String[]{obj.email});
+    }
+    public int updatePhone(User obj) {
+        ContentValues values = new ContentValues();
         values.put("phoneNumber", obj.phoneNumber);
 
         return db.update("User", values, "email=?", new String[]{obj.email});

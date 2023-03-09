@@ -99,8 +99,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
     private int waiting_time = 0;
 
     private String valueContext = "";
-    private String name = "";
-    private String phoneNumber = "";
 
     private static final String idUser = FirebaseAuth.getInstance().getUid();
     private FirebaseAuth auth;
@@ -117,19 +115,28 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 getResources().getColor(R.color.green));
 
         auth = FirebaseAuth.getInstance();
-        String email = Objects.requireNonNull(auth.getCurrentUser()).getEmail();
-        name = usersDAO.getName(email);
-        phoneNumber = usersDAO.getPhone(email);
+        String name = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
+        String phoneNumber = auth.getCurrentUser().getPhoneNumber();
+
         if (name != null) {
             tvFullName.setText(name + " | ");
+        } else {
+            tvFullName.setText("Chưa thêm tên" + " | ");
         }
         if (phoneNumber != null) {
             tvPhoneNumber.setText(phoneNumber);
+        } else {
+            phoneNumber = usersDAO.getPhone(auth.getCurrentUser().getEmail());
+            if (phoneNumber == null || phoneNumber.length() ==0){
+                tvPhoneNumber.setText("Chưa thêm SĐT");
+            }
+            else {
+                tvPhoneNumber.setText(phoneNumber);
+            }
+
         }
 
-        // refreshAddress();
         getListItemInOrder();
-
 
         // get service_charge_value
         setContext(null, "service_charge_value");
@@ -208,15 +215,20 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         tvAddCoupon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String resultPrice = tvNewPrice.getText().toString().trim();
+                if (resultPrice.equals("0đ")) {
+                    return;
+                }
                 startActivity(new Intent(PaymentActivity.this, CouponActivity.class));
             }
         });
+        String finalPhoneNumber = phoneNumber;
         btnPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
-                if (isNull()) {
+                if (isNull(name, finalPhoneNumber)) {
                     showConfirmDialog();
                     return;
                 }
@@ -383,6 +395,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 } else {
                     Log.d(TAG, "Đặt hàng thành công, id: " + id);
                     lnlCoupon.setVisibility(View.INVISIBLE);
+                    tvAddCoupon.setText("Thêm Coupon");
                     Toast.makeText(PaymentActivity.this, ORDER_SUCCESS, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -391,8 +404,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
     }
 
 
-    private boolean isNull() {
-        return (name.length() == 0 || phoneNumber.length() == 0);
+    private boolean isNull(String name, String phoneNumber) {
+        return (name == null || phoneNumber == null);
     }
 
     private void showConfirmDialog() {
@@ -422,10 +435,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
     private void askPermission() {
         ActivityCompat.requestPermissions(PaymentActivity.this, new String[]
                 {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
-    }
-
-    public void demo(String text) {
-        Toast.makeText(this, "" + text, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("SetTextI18n")
@@ -482,55 +491,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
 
     }
 
-
-    private void refreshAddress() {
-        Thread t1 = new Thread() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void run() {
-
-                while (true) {
-                    if (ContextCompat.checkSelfPermission(PaymentActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        LocationProvider locationManager = new LocationProvider(PaymentActivity.this);
-                        locationManager.getLastLocation(new LocationProvider.OnLocationChangedListener() {
-                            @Override
-                            public void onLocationChanged(Location location) {
-                                if (location != null) {
-                                    Geocoder geocoder = new Geocoder(PaymentActivity.this, Locale.getDefault());
-                                    List<Address> addresses;
-                                    try {
-                                        addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                        String mLocation = addresses.get(0).getAddressLine(0);
-                                        double currentLongitude = addresses.get(0).getLongitude();
-                                        double currentLatitude = addresses.get(0).getLatitude();
-                                        final String coordinate = currentLongitude + "-" + currentLatitude;
-                                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                tvAddress.setText(mLocation);
-                                            }
-                                        });
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        });
-                    } else {
-                        askPermission();
-                    }
-
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        t1.start();
-    }
-
     private void setContext(TextView textView, String paramString) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("asset_string").child(paramString);
         ref.addValueEventListener(new ValueEventListener() {
@@ -561,13 +521,30 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         super.onBackPressed();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onRefresh() {
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             swipeRefreshLayout.setRefreshing(false);
+
             String userName = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
-            tvFullName.setText(userName);
+            String phone = auth.getCurrentUser().getPhoneNumber();
+            if (userName != null) {
+                tvFullName.setText(userName + " | ");
+            }
+            if (phone != null) {
+                tvPhoneNumber.setText(phone);
+            } else {
+                phone = usersDAO.getPhone(auth.getCurrentUser().getEmail());
+                if (phone == null || phone.length() ==0){
+                    tvPhoneNumber.setText("Chưa thêm SĐT");
+                }
+                else {
+                    tvPhoneNumber.setText(phone);
+                }
+            }
+
             if (ContextCompat.checkSelfPermission(PaymentActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 LocationProvider locationManager = new LocationProvider(PaymentActivity.this);
                 locationManager.getLastLocation(new LocationProvider.OnLocationChangedListener() {
@@ -601,6 +578,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         }, 1500);
 
     }
+
     @Override
     protected void onStart() {
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -608,6 +586,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
 
         super.onStart();
     }
+
     @Override
     protected void onStop() {
         unregisterReceiver(networkChangeListener);

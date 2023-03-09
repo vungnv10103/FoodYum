@@ -15,7 +15,7 @@
         android:layout_marginHorizontal="40dp"
         android:gravity="center"
         android:fontFamily="@font/roboto_bold"
-        android:text="Bạn cần cập nhật thông tin cá nhân trước khi mua hàng !"
+        android:text="Bạn cần cập nhật đầy đủ thông tin cá nhân trước khi mua hàng !"
         android:textColor="@color/black"
         android:textSize="18sp"
         />
