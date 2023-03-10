@@ -57,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements Constant {
             } else if (idScreen.equals("account")) {
                 navController.navigate(R.id.navigation_account);
             }
+            else if (idScreen.equals("home")) {
+                navController.navigate(R.id.navigation_home);
+            }
         }
         NavigationUI.setupWithNavController(binding.navView, navController);
 

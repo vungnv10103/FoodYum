@@ -42,9 +42,11 @@ import java.util.Objects;
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
+import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.activities.InformationUserActivity;
 import vungnv.com.foodyum.activities.LoginActivity;
+import vungnv.com.foodyum.activities.ShowAllProductsByMerchantActivity;
 import vungnv.com.foodyum.databinding.FragmentAccountBinding;
 import vungnv.com.foodyum.model.Order;
 import vungnv.com.foodyum.ui.order.ManagerOrderActivity;
@@ -113,22 +115,32 @@ public class AccountFragment extends Fragment implements Constant, OnBackPressed
             @Override
             public void onClick(View v) {
                 //Toast.makeText(getContext(), "waiting...", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getContext(), ManagerOrderActivity.class));
+                Intent intent = new Intent(getContext(), ManagerOrderActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("index", 0);
+                intent.putExtra("idTabLayout", bundle);
+                startActivity(intent);
             }
         });
         tvOrderDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(getContext(), "done...", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getContext(), ManagerOrderActivity.class));
+                Intent intent = new Intent(getContext(), ManagerOrderActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("index", 1);
+                intent.putExtra("idTabLayout", bundle);
+                startActivity(intent);
             }
         });
         tvOrderCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // getOrderCancel();
-                //Toast.makeText(getContext(), "cancelled...", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getContext(), ManagerOrderActivity.class));
+                Intent intent = new Intent(getContext(), ManagerOrderActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("index", 2);
+                intent.putExtra("idTabLayout", bundle);
+                startActivity(intent);
             }
         });
 
