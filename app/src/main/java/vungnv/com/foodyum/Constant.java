@@ -6,7 +6,7 @@ public interface Constant {
     int SELECT_PICTURE = 10;
     String CHANNEL_ID = "my_channel_id";
     String DB_USER = "User.db";
-    String DB_ORDER = "Order.db";
+    String DB_ORDER = "OrderHistory.db";
     String DB_CART = "Cart.db";
     String CATEGORY_LIST = "danh sách thể loại";
     String DB_ITEM_CART = "ItemCart.db";

@@ -2,7 +2,6 @@ package vungnv.com.foodyum.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,28 +11,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.model.Order;
 
 
-public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.ViewHolder> implements Constant, Filterable {
+public class OrderWaitingAdapter extends RecyclerView.Adapter<OrderWaitingAdapter.ViewHolder> implements Constant, Filterable {
     private static List<Order> list;
     private final List<Order> listOld;
     private final Context context;
 
 
-    public OrderHistoryAdapter(Context context, List<Order> list) {
+    public OrderWaitingAdapter(Context context, List<Order> list) {
         this.context = context;
-        OrderHistoryAdapter.list = list;
+        OrderWaitingAdapter.list = list;
         this.listOld = list;
     }
 
@@ -110,59 +106,5 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             });
         }
     }
-    public void updateList(List<Order> newList) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new OrderDiffCallback(newList, list));
-        int oldSize = list.size();
-        list.clear();
-        list.addAll(newList);
-        diffResult.dispatchUpdatesTo(this);
-        int newSize = newList.size();
-        if (newSize > oldSize) {
-          //  Log.d(TAG,  newList.get(newList.size()-1).items + newList.get(newList.size()-1).dateTime);
-        }
-    }
-    // Create a DiffUtil.Callback class to calculate the difference between old and new order lists
-    private static class OrderDiffCallback extends DiffUtil.Callback {
-        private final List<Order> oldOrderList;
-        private final List<Order> newOrderList;
-
-        public OrderDiffCallback(List<Order> newOrderList, List<Order> oldOrderList) {
-            this.newOrderList = newOrderList;
-            this.oldOrderList = oldOrderList;
-        }
-
-        @Override
-        public int getOldListSize() {
-            return oldOrderList.size();
-        }
-
-        @Override
-        public int getNewListSize() {
-            return newOrderList.size();
-        }
-
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return Objects.equals(oldOrderList.get(oldItemPosition).id, newOrderList.get(newItemPosition).id);
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            Order oldOrder = oldOrderList.get(oldItemPosition);
-            Order newOrder = newOrderList.get(newItemPosition);
-            return oldOrder.items.equals(newOrder.items)
-                    && Objects.equals(oldOrder.price, newOrder.price)
-                    && Objects.equals(oldOrder.quantity, newOrder.quantity)
-                    && Objects.equals(oldOrder.waitingTime, newOrder.waitingTime)
-                    && Objects.equals(oldOrder.idUser, newOrder.idUser)
-                    && Objects.equals(oldOrder.dateTime, newOrder.dateTime)
-                    && Objects.equals(oldOrder.id, newOrder.id)
-                    && Objects.equals(oldOrder.idMerchant, newOrder.idMerchant)
-                    && Objects.equals(oldOrder.notes, newOrder.notes)
-                    && Objects.equals(oldOrder.pos, newOrder.pos)
-                    && Objects.equals(oldOrder.status, newOrder.status);
-        }
-    }
-
 
 }

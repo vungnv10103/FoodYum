@@ -67,6 +67,7 @@ import java.util.TimerTask;
 
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
+import vungnv.com.foodyum.DAO.OrderHistoryDAO;
 import vungnv.com.foodyum.DAO.UsersDAO;
 import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
@@ -100,6 +101,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
 
     private String valueContext = "";
 
+    private int posByUser =0;
+
     private static final String idUser = FirebaseAuth.getInstance().getUid();
     private FirebaseAuth auth;
 
@@ -127,10 +130,9 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
             tvPhoneNumber.setText(phoneNumber);
         } else {
             phoneNumber = usersDAO.getPhone(auth.getCurrentUser().getEmail());
-            if (phoneNumber == null || phoneNumber.length() ==0){
+            if (phoneNumber == null || phoneNumber.length() == 0) {
                 tvPhoneNumber.setText("Chưa thêm SĐT");
-            }
-            else {
+            } else {
                 tvPhoneNumber.setText(phoneNumber);
             }
 
@@ -278,7 +280,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                     for (int i = 0; i < listOrder.size(); i++) {
                         // true for 1 idMerchant at a time (>2 id in cart => error) fixed on 23/02/2023
                         ItemCart itemCart = listOrder.get(i);
-                        pushOrder(idOrder, idUser, itemCart.idMerchant, dateTime,
+//                        pushOrder(idOrder, idUser, itemCart.idMerchant, dateTime,
+//                                itemCart.name, itemCart.quantity, 1, String.valueOf(itemCart.price), waiting_time, itemCart.notes
+//                        );
+                        pushOrderByClient(idOrder, idUser, itemCart.idMerchant, dateTime,
                                 itemCart.name, itemCart.quantity, 1, String.valueOf(itemCart.price), waiting_time, itemCart.notes
                         );
                     }
@@ -320,10 +325,12 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                     for (int i = 0; i < mergedLists1.size(); i++) {
                         Log.d(TAG, "mergedList: " + mergedLists1.get(i).toString());
                         ListItemInOrder itemCart = mergedLists1.get(i);
-                        pushOrder(idOrder, idUser, itemCart.idMerchant, dateTime,
+//                        pushOrder(idOrder, idUser, itemCart.idMerchant, dateTime,
+//                                itemCart.name, itemCart.quantity, 1, itemCart.price, waiting_time, itemCart.notes
+//                        );
+                        pushOrderByClient(idOrder, idUser, itemCart.idMerchant, dateTime,
                                 itemCart.name, itemCart.quantity, 1, itemCart.price, waiting_time, itemCart.notes
                         );
-
                     }
 
                 }
@@ -375,13 +382,14 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
 
+
         ref.runTransaction(new Transaction.Handler() {
             @NonNull
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
                 long childCount = currentData.getChildrenCount();
                 String idNew = id + childCount;
-                Order order = new Order((int) childCount, idNew, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
+                Order order = new Order((int) childCount, posByUser, idNew, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
                 Map<String, Object> mListOrder = order.toMap();
                 currentData.child(String.valueOf(childCount)).setValue(mListOrder);
                 return Transaction.success(currentData);
@@ -397,6 +405,42 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                     lnlCoupon.setVisibility(View.INVISIBLE);
                     tvAddCoupon.setText("Thêm Coupon");
                     Toast.makeText(PaymentActivity.this, ORDER_SUCCESS, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
+    private void pushOrderByClient(String id, String idUser, String idMerchant, String dateTime,
+                                   String item, String quantity, int status, String price, int waitingTime, String notes) {
+
+        final DatabaseReference refNew = FirebaseDatabase.getInstance().getReference().child("list_order_by_idUserClient").child(idUser);
+
+        refNew.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                long childCount = currentData.getChildrenCount();
+                posByUser = (int) childCount;
+                String idNew = id + childCount;
+                Order order = new Order((int) childCount, idNew, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
+                Map<String, Object> mListOrder = order.toMap();
+                currentData.child(String.valueOf(childCount)).setValue(mListOrder);
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                if (error != null) {
+                    Log.d(TAG, "onComplete push order: " + "Transaction failed.");
+                    Toast.makeText(PaymentActivity.this, ORDER_FAIL, Toast.LENGTH_SHORT).show();
+                } else {
+//                    Log.d(TAG, "Đặt hàng thành công 2, id: " + id);
+//                    lnlCoupon.setVisibility(View.INVISIBLE);
+//                    tvAddCoupon.setText("Thêm Coupon");
+//                    Toast.makeText(PaymentActivity.this, ORDER_SUCCESS, Toast.LENGTH_SHORT).show();
+                    pushOrder(id, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
+
                 }
             }
         });
@@ -430,6 +474,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         dialog.getWindow().setAttributes(lp);
         dialog.show();
     }
+
 
 
     private void askPermission() {
@@ -537,10 +582,9 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 tvPhoneNumber.setText(phone);
             } else {
                 phone = usersDAO.getPhone(auth.getCurrentUser().getEmail());
-                if (phone == null || phone.length() ==0){
+                if (phone == null || phone.length() == 0) {
                     tvPhoneNumber.setText("Chưa thêm SĐT");
-                }
-                else {
+                } else {
                     tvPhoneNumber.setText(phone);
                 }
             }
