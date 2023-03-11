@@ -19,7 +19,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:labelVisibilityMode="labeled"
-            app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
             app:layout_constraintRight_toRightOf="parent"
             app:menu="@menu/bottom_nav_menu" />
 
@@ -37,6 +36,6 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--    app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"-->

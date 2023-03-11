@@ -138,6 +138,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
             }
         }
 
+        swipeRefreshLayout.setEnabled(false); // turn off swipeRefreshLayout.
         swipeRefreshLayout.setColorSchemeColors(
 //                getResources().getColor(android.R.color.holo_red_light),
                 getResources().getColor(R.color.red),
@@ -177,6 +178,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
                 for (DataSnapshot childSnapshot1 : dataSnapshot.getChildren()) {
                     Product value = childSnapshot1.getValue(Product.class);
                     assert value != null;
+//                    value.type.equals(type) &&
                     if (value.type.equals(type) && value.status !=0) {
                         aListProducts.add(value);
                     }
@@ -189,8 +191,7 @@ public class ShowListProductDetailActivity extends AppCompatActivity implements 
                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListProduct.getContext(),
                         linearLayoutManager.getOrientation());
                 rcvListProduct.addItemDecoration(dividerItemDecoration);
-                rcvListProduct.setHasFixedSize(true);
-                rcvListProduct.setNestedScrollingEnabled(false);
+
                 isReady = true;
                 progressDialog.dismiss();
 

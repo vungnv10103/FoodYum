@@ -20,6 +20,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import java.util.Objects;
 
+
 import vungnv.com.foodyum.databinding.ActivityMainBinding;
 import vungnv.com.foodyum.utils.NetworkChangeListener;
 import vungnv.com.foodyum.utils.OnBackPressed;

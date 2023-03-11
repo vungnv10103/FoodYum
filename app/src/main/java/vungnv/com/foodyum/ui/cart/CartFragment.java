@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
+import java.util.Objects;
 
 
 import dmax.dialog.SpotsDialog;
@@ -53,7 +54,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
     private final long delay = 1000;
     private SpotsDialog processDialog;
     private int temp = 0;
-    private static final String idUser = FirebaseAuth.getInstance().getUid();
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -114,6 +115,8 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
     }
 
     public void showListInCart() {
+        processDialog.show();
+        String idUser = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         listCart = itemCartDAO.getALL(idUser, 1, 2);
         if (listCart.size() == 0) {
             isReady = true;
@@ -129,13 +132,17 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
         CartAdapter cartAdapter = new CartAdapter(getContext(), listCart, this);
         rcv_cart.setAdapter(cartAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        linearLayoutManager.setSmoothScrollbarEnabled(true);
         rcv_cart.setLayoutManager(linearLayoutManager);
         isReady = true;
 
+        processDialog.dismiss();
 
     }
 
     public void refreshButton() {
+        processDialog.show();
+        String idUser = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         listCart = itemCartDAO.getALL(idUser, 2);
         double totalPrice = 0;
         int totalQuantity = 0;
@@ -147,6 +154,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
         final String resultButton = totalQuantity + " Món" + "  Trang thanh toán" + "  " + totalPrice + "đ";
         btnCheckout.setText(resultButton);
         isReady = true;
+        processDialog.dismiss();
     }
 
     @Override

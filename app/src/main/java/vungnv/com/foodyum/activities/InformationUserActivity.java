@@ -68,7 +68,13 @@ public class InformationUserActivity extends AppCompatActivity implements Consta
         String email = currentUser.getEmail();
         String name = currentUser.getDisplayName();
         String phone = currentUser.getPhoneNumber();
-        setData(name, phone, email);
+        if (phone == null) {
+            phone = usersDAO.getPhone(email);
+            setData(name, phone, email);
+        } else {
+            setData(name, phone, email);
+        }
+
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
