@@ -16,7 +16,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -61,27 +60,28 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
-import vungnv.com.foodyum.DAO.OrderHistoryDAO;
 import vungnv.com.foodyum.DAO.UsersDAO;
 import vungnv.com.foodyum.MainActivity;
 import vungnv.com.foodyum.R;
 import vungnv.com.foodyum.adapter.OrderAdapter;
+import vungnv.com.foodyum.model.Asset;
 import vungnv.com.foodyum.model.ItemCart;
 import vungnv.com.foodyum.model.ListItemInOrder;
 import vungnv.com.foodyum.model.Order;
+import vungnv.com.foodyum.model.ProductSlideShow;
 import vungnv.com.foodyum.utils.LocationProvider;
 import vungnv.com.foodyum.utils.NetworkChangeListener;
 
 public class PaymentActivity extends AppCompatActivity implements Constant, SwipeRefreshLayout.OnRefreshListener {
-    private Toolbar toolbar;
-    private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
+
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Toolbar toolbar;
+
+    private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
     private LinearLayout selectAddress, lnlCoupon;
     private ConstraintLayout ctlMethodPayment;
     private RecyclerView rcvOrder, rcvCoupon;
@@ -101,10 +101,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
 
     private String valueContext = "";
 
-    private int posByUser =0;
+    private int posByUser = 0;
+
 
     private static final String idUser = FirebaseAuth.getInstance().getUid();
-    private FirebaseAuth auth;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -113,32 +113,38 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         setContentView(R.layout.activity_payment);
 
         init();
+        //
+
+        swipeRefreshLayout.setEnabled(false); // turn off swipe
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(R.color.red),
                 getResources().getColor(R.color.green));
 
-        auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         String name = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
         String phoneNumber = auth.getCurrentUser().getPhoneNumber();
+
 
         if (name != null) {
             tvFullName.setText(name + " | ");
         } else {
-            tvFullName.setText("Chưa thêm tên" + " | ");
+            tvFullName.setText(NO_NAME);
         }
         if (phoneNumber != null) {
             tvPhoneNumber.setText(phoneNumber);
         } else {
             phoneNumber = usersDAO.getPhone(auth.getCurrentUser().getEmail());
             if (phoneNumber == null || phoneNumber.length() == 0) {
-                tvPhoneNumber.setText("Chưa thêm SĐT");
+                tvPhoneNumber.setText(NO_PHONE);
             } else {
                 tvPhoneNumber.setText(phoneNumber);
             }
 
         }
 
+        getLocation();
         getListItemInOrder();
+
 
         // get service_charge_value
         setContext(null, "service_charge_value");
@@ -185,6 +191,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 TextView tvFee = dialog.findViewById(R.id.tvFee);
                 TextView tvContextService = dialog.findViewById(R.id.tvContextService);
                 TextView tvService = dialog.findViewById(R.id.tvService);
+
 
                 setContext(tvContextFee, "fee");
                 setContext(tvContextService, "service_charge");
@@ -280,9 +287,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                     for (int i = 0; i < listOrder.size(); i++) {
                         // true for 1 idMerchant at a time (>2 id in cart => error) fixed on 23/02/2023
                         ItemCart itemCart = listOrder.get(i);
-//                        pushOrder(idOrder, idUser, itemCart.idMerchant, dateTime,
-//                                itemCart.name, itemCart.quantity, 1, String.valueOf(itemCart.price), waiting_time, itemCart.notes
-//                        );
                         pushOrderByClient(idOrder, idUser, itemCart.idMerchant, dateTime,
                                 itemCart.name, itemCart.quantity, 1, String.valueOf(itemCart.price), waiting_time, itemCart.notes
                         );
@@ -325,9 +329,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                     for (int i = 0; i < mergedLists1.size(); i++) {
                         Log.d(TAG, "mergedList: " + mergedLists1.get(i).toString());
                         ListItemInOrder itemCart = mergedLists1.get(i);
-//                        pushOrder(idOrder, idUser, itemCart.idMerchant, dateTime,
-//                                itemCart.name, itemCart.quantity, 1, itemCart.price, waiting_time, itemCart.notes
-//                        );
                         pushOrderByClient(idOrder, idUser, itemCart.idMerchant, dateTime,
                                 itemCart.name, itemCart.quantity, 1, itemCart.price, waiting_time, itemCart.notes
                         );
@@ -375,6 +376,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         tvOldPrice.setPaintFlags(tvOldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         tvNewPrice = findViewById(R.id.tvNewPrice);
         itemCartDAO = new ItemCartDAO(getApplicationContext());
+
     }
 
     private void pushOrder(String id, String idUser, String idMerchant, String dateTime,
@@ -401,9 +403,9 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                     Log.d(TAG, "onComplete push order: " + "Transaction failed.");
                     Toast.makeText(PaymentActivity.this, ORDER_FAIL, Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.d(TAG, "Đặt hàng thành công, id: " + id);
+                    Log.d(TAG, ORDER_SUCCESS + ", id: " + id);
                     lnlCoupon.setVisibility(View.INVISIBLE);
-                    tvAddCoupon.setText("Thêm Coupon");
+                    tvAddCoupon.setText(ADD_COUPON);
                     Toast.makeText(PaymentActivity.this, ORDER_SUCCESS, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -435,10 +437,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                     Log.d(TAG, "onComplete push order: " + "Transaction failed.");
                     Toast.makeText(PaymentActivity.this, ORDER_FAIL, Toast.LENGTH_SHORT).show();
                 } else {
-//                    Log.d(TAG, "Đặt hàng thành công 2, id: " + id);
-//                    lnlCoupon.setVisibility(View.INVISIBLE);
-//                    tvAddCoupon.setText("Thêm Coupon");
-//                    Toast.makeText(PaymentActivity.this, ORDER_SUCCESS, Toast.LENGTH_SHORT).show();
                     pushOrder(id, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
 
                 }
@@ -476,7 +474,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
     }
 
 
-
     private void askPermission() {
         ActivityCompat.requestPermissions(PaymentActivity.this, new String[]
                 {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
@@ -510,35 +507,75 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         }
         tvQuantityItem.setText("Tạm tính(" + quantity + " món)");
         tvTotalPrice.setText(totalPrice + "đ");
-        fee = totalPrice / 100 * 20;
-        tvFee.setText(fee + "đ");
-        double oldPrice = totalPrice + fee;
-        Bundle data = getIntent().getBundleExtra("data-coupon");
-        if (data == null) {
-            lnlCoupon.setVisibility(View.INVISIBLE);
-            tvOldPrice.setVisibility(View.INVISIBLE);
-            tvNewPrice.setText(oldPrice + "đ");
-        } else {
-            lnlCoupon.setVisibility(View.VISIBLE);
-            String idCoupon = data.getString("id");
 
-            double discount = data.getDouble("discount") * totalPrice / 100;
+        // get fee
 
-            tvCoupon.setText(discount + "đ");
-            tvAddCoupon.setText(idCoupon);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("asset_string");
+        double finalTotalPrice = totalPrice;
+        ref.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Asset> listAsset = new ArrayList<>();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Asset asset = ds.getValue(Asset.class);
+                    assert asset != null;
+                    listAsset.add(asset);
 
-            tvOldPrice.setVisibility(View.VISIBLE);
+                }
+                double total_price_lv1 = Double.parseDouble(listAsset.get(0).total_price_lv1);
+                double total_price_lv2 = Double.parseDouble(listAsset.get(0).total_price_lv2);
+                double transport_fee_lv1 = Double.parseDouble(listAsset.get(0).transport_fee_lv1);
+                double transport_fee_lv2 = Double.parseDouble(listAsset.get(0).transport_fee_lv2);
+                double transport_fee_lv3 = Double.parseDouble(listAsset.get(0).transport_fee_lv3);
 
-            tvOldPrice.setText(oldPrice + "đ");
-            tvNewPrice.setText(oldPrice - discount + "đ");
+                if (finalTotalPrice <= total_price_lv1){
+                    fee = finalTotalPrice / PERCENT * transport_fee_lv1;
+                }
+                else if(finalTotalPrice < total_price_lv2){
+                    fee = finalTotalPrice / PERCENT * transport_fee_lv2;
+                }
+                else if (finalTotalPrice > total_price_lv2){
+                    fee = finalTotalPrice / PERCENT * transport_fee_lv3;
+                }
 
-        }
+                tvFee.setText(fee + "đ");
+                double oldPrice = finalTotalPrice + fee;
+                Bundle data = getIntent().getBundleExtra("data-coupon");
+                if (data == null) {
+                    lnlCoupon.setVisibility(View.INVISIBLE);
+                    tvOldPrice.setVisibility(View.INVISIBLE);
+                    tvNewPrice.setText(oldPrice + "đ");
+                } else {
+                    lnlCoupon.setVisibility(View.VISIBLE);
+                    String idCoupon = data.getString("id");
+
+                    double discount = data.getDouble("discount") * finalTotalPrice / PERCENT;
+
+                    tvCoupon.setText(discount + "đ");
+                    tvAddCoupon.setText(idCoupon);
+
+                    tvOldPrice.setVisibility(View.VISIBLE);
+
+                    tvOldPrice.setText(oldPrice + "đ");
+                    tvNewPrice.setText(oldPrice - discount + "đ");
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "onCancelled: " + error.getMessage());
+            }
+        });
+
 
     }
 
     private void setContext(TextView textView, String paramString) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("asset_string").child(paramString);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("asset_value").child(paramString);
         ref.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (paramString.equals("service_charge_value")) {
@@ -566,61 +603,38 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         super.onBackPressed();
     }
 
+
     @SuppressLint("SetTextI18n")
-    @Override
-    public void onRefresh() {
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            swipeRefreshLayout.setRefreshing(false);
-
-            String userName = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
-            String phone = auth.getCurrentUser().getPhoneNumber();
-            if (userName != null) {
-                tvFullName.setText(userName + " | ");
-            }
-            if (phone != null) {
-                tvPhoneNumber.setText(phone);
-            } else {
-                phone = usersDAO.getPhone(auth.getCurrentUser().getEmail());
-                if (phone == null || phone.length() == 0) {
-                    tvPhoneNumber.setText("Chưa thêm SĐT");
-                } else {
-                    tvPhoneNumber.setText(phone);
-                }
-            }
-
-            if (ContextCompat.checkSelfPermission(PaymentActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                LocationProvider locationManager = new LocationProvider(PaymentActivity.this);
-                locationManager.getLastLocation(new LocationProvider.OnLocationChangedListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        if (location != null) {
-                            Geocoder geocoder = new Geocoder(PaymentActivity.this, Locale.getDefault());
-                            List<Address> addresses;
-                            try {
-                                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                String mLocation = addresses.get(0).getAddressLine(0);
-                                double currentLongitude = addresses.get(0).getLongitude();
-                                double currentLatitude = addresses.get(0).getLatitude();
-                                final String coordinate = currentLongitude + "-" + currentLatitude;
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        tvAddress.setText(mLocation);
-                                    }
-                                });
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+    private void getLocation() {
+        if (ContextCompat.checkSelfPermission(PaymentActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationProvider locationManager = new LocationProvider(PaymentActivity.this);
+            locationManager.getLastLocation(new LocationProvider.OnLocationChangedListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    if (location != null) {
+                        Geocoder geocoder = new Geocoder(PaymentActivity.this, Locale.getDefault());
+                        List<Address> addresses;
+                        try {
+                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            String mLocation = addresses.get(0).getAddressLine(0);
+                            double currentLongitude = addresses.get(0).getLongitude();
+                            double currentLatitude = addresses.get(0).getLatitude();
+                            final String coordinate = currentLongitude + "-" + currentLatitude;
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tvAddress.setText(mLocation);
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
-                });
-            } else {
-                askPermission();
-            }
-
-        }, 1500);
-
+                }
+            });
+        } else {
+            askPermission();
+        }
     }
 
     @Override
@@ -635,5 +649,16 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
     protected void onStop() {
         unregisterReceiver(networkChangeListener);
         super.onStop();
+    }
+
+    @Override
+    public void onRefresh() {
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            swipeRefreshLayout.setRefreshing(false);
+
+            // reload ...
+
+        }, 1500);
     }
 }

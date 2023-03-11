@@ -58,7 +58,7 @@ public class CouponActivity extends AppCompatActivity {
 
         init();
 
-        String idMerchantTemp = "fGQRuHz9mrWKXdk4oJroyhOHxaR2";
+        String idMerchantTemp = "K7rJ9YbiB0crBf7PfJ9gy2f8kwn1"; // hard code
         getListCouponByIdMerchant(idMerchantTemp);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -138,6 +138,7 @@ public class CouponActivity extends AppCompatActivity {
                 }
                 if (aListCoupon.size() == 0) {
                     Toast.makeText(CouponActivity.this, "Hiện không có mã giảm giá nào !", Toast.LENGTH_SHORT).show();
+                    processDialog.dismiss();
                     return;
                 }
                 couponAdapter = new CouponAdapter(CouponActivity.this, aListCoupon);

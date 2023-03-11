@@ -37,5 +37,9 @@ public interface Constant {
     String ADD_FAVOURITE = "Đã thêm vào yêu thích !";
     String REMOVE_FAVOURITE = "Đã bỏ khỏi yêu thích !";
     String UPDATE_QUANTITY = "Cập nhật số lượng thành công !";
+    String ADD_COUPON = "Thêm Coupon";
+    String NO_NAME = "Chưa thêm tên" + " | ";
+    String NO_PHONE = "Chưa thêm SĐT";
+    int PERCENT = 100;
 
 }

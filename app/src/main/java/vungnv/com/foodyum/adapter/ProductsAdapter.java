@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import vungnv.com.foodyum.Constant;
@@ -33,14 +36,16 @@ import vungnv.com.foodyum.activities.ShowAllProductsByMerchantActivity;
 import vungnv.com.foodyum.model.Product;
 
 
-public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHolder> implements Constant {
+public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHolder> implements Constant, Filterable {
     @SuppressLint("StaticFieldLeak")
     private static Context context;
     private static List<Product> list;
+    private final List<Product> listOld;
 
     public ProductsAdapter(Context context, List<Product> list) {
         ProductsAdapter.context = context;
         ProductsAdapter.list = list;
+        this.listOld = list;
     }
 
     @NonNull
@@ -105,6 +110,38 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             return 0;
         }
         return list.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String str = constraint.toString();
+                if (str.isEmpty()) {
+                    list = listOld;
+                } else {
+                    List<Product> mList = new ArrayList<>();
+                    for (Product item : listOld) {
+                        if (item.name.toLowerCase().contains(str.toLowerCase())) {
+                            mList.add(item);
+                        }
+                    }
+                    list = mList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = list;
+                return filterResults;
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+//                list = (List<ProductModel>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public static class viewHolder extends RecyclerView.ViewHolder {
