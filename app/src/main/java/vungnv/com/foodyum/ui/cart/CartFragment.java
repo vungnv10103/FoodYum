@@ -57,7 +57,7 @@ public class CartFragment extends Fragment implements Constant, OnBackPressed {
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+                            ViewGroup container, Bundle savedInstanceState) {
 
 
         vungnv.com.foodyum.databinding.FragmentCartBinding binding = FragmentCartBinding.inflate(inflater, container, false);

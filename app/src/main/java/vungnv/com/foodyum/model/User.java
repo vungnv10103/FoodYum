@@ -10,6 +10,7 @@ public class User {
     public String email;
     public String pass;
     public String phoneNumber;
+    public int status;
     public String searchHistory;
     public String favouriteRestaurant;
     public String feedback;

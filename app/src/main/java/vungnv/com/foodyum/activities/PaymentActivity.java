@@ -61,7 +61,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-
 import vungnv.com.foodyum.Constant;
 import vungnv.com.foodyum.DAO.ItemCartDAO;
 import vungnv.com.foodyum.DAO.UsersDAO;
@@ -103,7 +102,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
 
     private int posByUser = 0;
 
-
     private static final String idUser = FirebaseAuth.getInstance().getUid();
 
     @SuppressLint("SetTextI18n")
@@ -123,7 +121,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String name = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
         String phoneNumber = auth.getCurrentUser().getPhoneNumber();
-
 
         if (name != null) {
             tvFullName.setText(name + " | ");
@@ -145,12 +142,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         getLocation();
         getListItemInOrder();
 
-
         // get service_charge_value
         setContext(null, "service_charge_value");
         // get waiting_time
         setContext(null, "waiting_time");
-
 
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_black);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -185,21 +180,17 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 dialog.setContentView(R.layout.bottom_sheet_fee);
                 dialog.setCancelable(false);
 
-
                 ImageButton imgClose = dialog.findViewById(R.id.imgClose);
                 TextView tvContextFee = dialog.findViewById(R.id.tvContextFee);
                 TextView tvFee = dialog.findViewById(R.id.tvFee);
                 TextView tvContextService = dialog.findViewById(R.id.tvContextService);
                 TextView tvService = dialog.findViewById(R.id.tvService);
 
-
                 setContext(tvContextFee, "fee");
                 setContext(tvContextService, "service_charge");
 
-
                 tvService.setText(service_charge + "đ");
                 tvFee.setText(fee - service_charge + "đ");
-
 
                 imgClose.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -235,8 +226,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         btnPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 if (isNull(name, finalPhoneNumber)) {
                     showConfirmDialog();
                     return;
@@ -250,7 +239,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
 
                 Date currentTime = Calendar.getInstance().getTime();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat fm = new SimpleDateFormat();
+                @SuppressLint("SimpleDateFormat")
+                SimpleDateFormat fm = new SimpleDateFormat();
                 fm.applyPattern("HH:mm:ss-z");
                 String time = fm.format(currentTime);
                 String date = df.format(currentTime);
@@ -259,23 +249,22 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 String idOrder = date.replaceAll("/", "")
                         + time.substring(0, time.indexOf("-")).replaceAll(":", "");
 
-
                 String sTotalPrice = tvNewPrice.getText().toString().trim();
                 double totalPrice = Double.parseDouble(sTotalPrice.substring(0, sTotalPrice.length() - 1));
 
                 listOrder = itemCartDAO.getALL(idUser, 2);
 
-
                 // Check if there are more than 2 products of the same restaurant
                 Set<String> idMerchant = new HashSet<>();
                 Set<String> duplicatesIdMerchant = new HashSet<>();
+                List<String> nonDuplicatesIdMerchant = new ArrayList<String>();
 
                 for (int i = 0; i < listOrder.size(); i++) {
                     if (!idMerchant.add(listOrder.get(i).idMerchant)) {
                         duplicatesIdMerchant.add(listOrder.get(i).idMerchant);
                     }
                 }
-                List<String> nonDuplicatesIdMerchant = new ArrayList<String>();
+
                 for (int i = 0; i < listOrder.size(); i++) {
                     if (!duplicatesIdMerchant.contains(listOrder.get(i).idMerchant)) {
                         nonDuplicatesIdMerchant.add(listOrder.get(i).idMerchant);
@@ -288,8 +277,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                         // true for 1 idMerchant at a time (>2 id in cart => error) fixed on 23/02/2023
                         ItemCart itemCart = listOrder.get(i);
                         pushOrderByClient(idOrder, idUser, itemCart.idMerchant, dateTime,
-                                itemCart.name, itemCart.quantity, 1, String.valueOf(itemCart.price), waiting_time, itemCart.notes
-                        );
+                                itemCart.name, itemCart.quantity, 1, String.valueOf(itemCart.price), waiting_time,
+                                itemCart.notes);
                     }
                 }
 
@@ -303,7 +292,9 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                                 listOrder = itemCartDAO.getALL(idUser, id, 2);
                                 for (int i = 0; i < listOrder.size(); i++) {
                                     // combined into 1 order
-                                    listItemInOrders.add(new ListItemInOrder(listOrder.get(i).idMerchant, String.valueOf(listOrder.get(i).quantity), listOrder.get(i).name, String.valueOf(listOrder.get(i).price), listOrder.get(i).notes));
+                                    listItemInOrders.add(new ListItemInOrder(listOrder.get(i).idMerchant,
+                                            String.valueOf(listOrder.get(i).quantity), listOrder.get(i).name,
+                                            String.valueOf(listOrder.get(i).price), listOrder.get(i).notes));
                                 }
                             }
 
@@ -330,8 +321,7 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                         Log.d(TAG, "mergedList: " + mergedLists1.get(i).toString());
                         ListItemInOrder itemCart = mergedLists1.get(i);
                         pushOrderByClient(idOrder, idUser, itemCart.idMerchant, dateTime,
-                                itemCart.name, itemCart.quantity, 1, itemCart.price, waiting_time, itemCart.notes
-                        );
+                                itemCart.name, itemCart.quantity, 1, itemCart.price, waiting_time, itemCart.notes);
                     }
 
                 }
@@ -350,7 +340,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
 
         });
     }
-
 
     private void init() {
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout_payment);
@@ -380,10 +369,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
     }
 
     private void pushOrder(String id, String idUser, String idMerchant, String dateTime,
-                           String item, String quantity, int status, String price, int waitingTime, String notes) {
+            String item, String quantity, int status, String price, int waitingTime, String notes) {
 
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
-
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order")
+                .child(idMerchant);
 
         ref.runTransaction(new Transaction.Handler() {
             @NonNull
@@ -391,14 +380,16 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
                 long childCount = currentData.getChildrenCount();
                 String idNew = id + childCount;
-                Order order = new Order((int) childCount, posByUser, idNew, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
+                Order order = new Order((int) childCount, posByUser, idNew, idUser, idMerchant, dateTime, item,
+                        quantity, status, price, waitingTime, notes);
                 Map<String, Object> mListOrder = order.toMap();
                 currentData.child(String.valueOf(childCount)).setValue(mListOrder);
                 return Transaction.success(currentData);
             }
 
             @Override
-            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+            public void onComplete(@Nullable DatabaseError error, boolean committed,
+                    @Nullable DataSnapshot currentData) {
                 if (error != null) {
                     Log.d(TAG, "onComplete push order: " + "Transaction failed.");
                     Toast.makeText(PaymentActivity.this, ORDER_FAIL, Toast.LENGTH_SHORT).show();
@@ -414,9 +405,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
     }
 
     private void pushOrderByClient(String id, String idUser, String idMerchant, String dateTime,
-                                   String item, String quantity, int status, String price, int waitingTime, String notes) {
+            String item, String quantity, int status, String price, int waitingTime, String notes) {
 
-        final DatabaseReference refNew = FirebaseDatabase.getInstance().getReference().child("list_order_by_idUserClient").child(idUser);
+        final DatabaseReference refNew = FirebaseDatabase.getInstance().getReference()
+                .child("list_order_by_idUserClient").child(idUser);
 
         refNew.runTransaction(new Transaction.Handler() {
             @NonNull
@@ -425,14 +417,16 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 long childCount = currentData.getChildrenCount();
                 posByUser = (int) childCount;
                 String idNew = id + childCount;
-                Order order = new Order((int) childCount, idNew, idUser, idMerchant, dateTime, item, quantity, status, price, waitingTime, notes);
+                Order order = new Order((int) childCount, idNew, idUser, idMerchant, dateTime, item, quantity, status,
+                        price, waitingTime, notes);
                 Map<String, Object> mListOrder = order.toMap();
                 currentData.child(String.valueOf(childCount)).setValue(mListOrder);
                 return Transaction.success(currentData);
             }
 
             @Override
-            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+            public void onComplete(@Nullable DatabaseError error, boolean committed,
+                    @Nullable DataSnapshot currentData) {
                 if (error != null) {
                     Log.d(TAG, "onComplete push order: " + "Transaction failed.");
                     Toast.makeText(PaymentActivity.this, ORDER_FAIL, Toast.LENGTH_SHORT).show();
@@ -444,7 +438,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         });
 
     }
-
 
     private boolean isNull(String name, String phoneNumber) {
         return (name == null || phoneNumber == null);
@@ -473,10 +466,9 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         dialog.show();
     }
 
-
     private void askPermission() {
-        ActivityCompat.requestPermissions(PaymentActivity.this, new String[]
-                {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+        ActivityCompat.requestPermissions(PaymentActivity.this,
+                new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE);
     }
 
     @SuppressLint("SetTextI18n")
@@ -485,7 +477,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         if (listOrder.size() == 0) {
             OrderAdapter orderAdapter = new OrderAdapter(getApplicationContext(), listOrder, PaymentActivity.this);
             rcvOrder.setAdapter(orderAdapter);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),
+                    RecyclerView.VERTICAL, false);
             rcvOrder.setLayoutManager(linearLayoutManager);
             tvQuantityItem.setText(DEFAULT_TV_QUANTITY);
             tvTotalPrice.setText(0 + "đ");
@@ -496,7 +489,8 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         }
         OrderAdapter orderAdapter = new OrderAdapter(getApplicationContext(), listOrder, PaymentActivity.this);
         rcvOrder.setAdapter(orderAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),
+                RecyclerView.VERTICAL, false);
         rcvOrder.setLayoutManager(linearLayoutManager);
 
         double totalPrice = 0;
@@ -529,13 +523,11 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 double transport_fee_lv2 = Double.parseDouble(listAsset.get(0).transport_fee_lv2);
                 double transport_fee_lv3 = Double.parseDouble(listAsset.get(0).transport_fee_lv3);
 
-                if (finalTotalPrice <= total_price_lv1){
+                if (finalTotalPrice <= total_price_lv1) {
                     fee = finalTotalPrice / PERCENT * transport_fee_lv1;
-                }
-                else if(finalTotalPrice < total_price_lv2){
+                } else if (finalTotalPrice < total_price_lv2) {
                     fee = finalTotalPrice / PERCENT * transport_fee_lv2;
-                }
-                else if (finalTotalPrice > total_price_lv2){
+                } else if (finalTotalPrice > total_price_lv2) {
                     fee = finalTotalPrice / PERCENT * transport_fee_lv3;
                 }
 
@@ -549,14 +541,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 } else {
                     lnlCoupon.setVisibility(View.VISIBLE);
                     String idCoupon = data.getString("id");
-
                     double discount = data.getDouble("discount") * finalTotalPrice / PERCENT;
-
                     tvCoupon.setText(discount + "đ");
                     tvAddCoupon.setText(idCoupon);
-
                     tvOldPrice.setVisibility(View.VISIBLE);
-
                     tvOldPrice.setText(oldPrice + "đ");
                     tvNewPrice.setText(oldPrice - discount + "đ");
 
@@ -568,7 +556,6 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
                 Log.d(TAG, "onCancelled: " + error.getMessage());
             }
         });
-
 
     }
 
@@ -603,10 +590,10 @@ public class PaymentActivity extends AppCompatActivity implements Constant, Swip
         super.onBackPressed();
     }
 
-
     @SuppressLint("SetTextI18n")
     private void getLocation() {
-        if (ContextCompat.checkSelfPermission(PaymentActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(PaymentActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationProvider locationManager = new LocationProvider(PaymentActivity.this);
             locationManager.getLastLocation(new LocationProvider.OnLocationChangedListener() {
                 @Override
