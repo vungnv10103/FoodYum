@@ -26,6 +26,7 @@ import vungnv.com.foodyum.model.ItemCart;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> implements Constant {
     private final Context context;
+    @SuppressLint("StaticFieldLeak")
     private static PaymentActivity payment;
     private static List<ItemCart> listItem;
     private ItemCartDAO itemCartDAO;
@@ -33,7 +34,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
     public OrderAdapter(Context context, List<ItemCart> listItem, PaymentActivity paymentActivity) {
         this.context = context;
-        this.payment = paymentActivity;
+        payment = paymentActivity;
         OrderAdapter.listItem = listItem;
     }
 

@@ -18,8 +18,8 @@ public class Order {
 
     public Order() {
     }
-    public Order(int pos,  String id, String idUser, String idMerchant, String dateTime, String items,String quantity, int status,
-                 String price, int waitingTime, String notes) {
+    public Order(int pos,  String id, String idUser, String idMerchant, String dateTime, String items,String quantity,
+                 int status, String price, int waitingTime, String notes) {
         this.pos = pos;
         this.id = id;
         this.idUser = idUser;
@@ -33,8 +33,8 @@ public class Order {
         this.notes = notes;
     }
 
-    public Order(int pos, int posByUserClient, String id, String idUser, String idMerchant, String dateTime, String items,String quantity, int status,
-                 String price, int waitingTime, String notes) {
+    public Order(int pos, int posByUserClient, String id, String idUser, String idMerchant, String dateTime, String items,String quantity,
+                 int status, String price, int waitingTime, String notes) {
         this.pos = pos;
         this.posByUserClient = posByUserClient;
         this.id = id;

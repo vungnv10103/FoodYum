@@ -113,8 +113,6 @@ public class MainActivity extends AppCompatActivity implements Constant {
                 backPressCount = 0;
             }
         }
-
-
     }
 
     @Override

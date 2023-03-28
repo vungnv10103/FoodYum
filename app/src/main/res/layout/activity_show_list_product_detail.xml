@@ -66,29 +66,17 @@
                 app:cornerRadius="50dp" />
 
         </LinearLayout>
+
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:smoothScrollbar="true"
-            android:addStatesFromChildren="true"
-            android:nestedScrollingEnabled="true"
-         >
+            android:layout_height="match_parent">
 
-            <androidx.core.widget.NestedScrollView
-
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvListProduct"
                 android:layout_width="match_parent"
-
-                android:layout_height="wrap_content">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rcvListProduct"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </androidx.core.widget.NestedScrollView>
+                android:layout_height="wrap_content" />
 
         </ScrollView>
-
-
 
 
     </LinearLayout>
