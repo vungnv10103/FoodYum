@@ -1,10 +1,10 @@
 # FoodYum : Food Delivery App
 
 ### Home Screen
-![](/public/image/Home.jpg {
-   width:150px;
-   height:100px;
-})
+![](/public/image/Home.jpg)
+
+### Home Screen 2
+<img src='/public/image/Home.jpg' width='25'>
 
 ### Cart Screen
 ![](/public/image/Cart.jpg)
