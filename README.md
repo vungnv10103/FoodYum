@@ -1,7 +1,7 @@
 # FoodYum : Food Delivery App
 
 ### Home Screen
-<img src='/public/image/Home.jpg' width='320' height='640'> ![](/public/image/Cart.jpg)
+<img src='/public/image/Home.jpg' width='320' height='640'>  <img src='/public/image/Cart' width='320' height='640'>
 
 ### Cart Screen
 ![](/public/image/Cart.jpg)
