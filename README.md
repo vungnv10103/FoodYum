@@ -4,7 +4,7 @@
 ![](/public/image/Home.jpg)
 
 ### Home Screen 2
-<img src='/public/image/Home.jpg' width='1080'>
+<img src='/public/image/Home.jpg' width='640'>
 
 ### Cart Screen
 ![](/public/image/Cart.jpg)
