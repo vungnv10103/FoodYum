@@ -1,22 +1,22 @@
 # FoodYum : Food Delivery App
 
 ### Home Screen
-<img src='/public/image/Home.jpg' width='320' height='640'>  <img src='/public/image/Cart' width='320' height='640'>
+<img src='/public/image/Home.jpg' width='320' height='640'>  
 
 ### Cart Screen
-![](/public/image/Cart.jpg)
+<img src='/public/image/Cart.jpg' width='320' height='640'>
 
 ### Detail Restaurant Screen
-![](/public/image/DetailRestaurant.jpg)
+<img src='/public/image/DetailRestaurant.jpg' width='320' height='640'>
 
 ### Add to Cart Screen 1
-![](/public/image/AddToCart1.jpg)
+<img src='/public/image/AddToCart1.jpg' width='320' height='640'>
 
 ### Add to Cart Screen 2
-![](/public/image/AddToCart2.jpg)
+<img src='/public/image/AddToCart2.jpg' width='320' height='640'>
 
 ### Payment Screen
-![](/public/image/Payment.jpg)
+<img src='/public/image/Payment.jpg' width='320' height='640'>
 
 ### Profile Screen
-![](/public/image/Profile.jpg)
+<img src='/public/image/Profile.jpg' width='320' height='640'>
