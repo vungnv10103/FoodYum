@@ -1,150 +1,34 @@
 {
   "project_info": {
-    "project_number": "776966267201",
-    "firebase_url": "https://food-app-2fb04-default-rtdb.firebaseio.com",
-    "project_id": "food-app-2fb04",
-    "storage_bucket": "food-app-2fb04.appspot.com"
+    "project_number": "831821159243",
+    "firebase_url": "https://foodappbackup-default-rtdb.firebaseio.com",
+    "project_id": "foodappbackup",
+    "storage_bucket": "foodappbackup.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:776966267201:android:6323408028c830787f01c0",
-        "android_client_info": {
-          "package_name": "vungnv.com.foodapp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:776966267201:android:a2d27ca860e3c70e7f01c0",
-        "android_client_info": {
-          "package_name": "vungnv.com.foodappadmin"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:776966267201:android:06e0be5254d3983a7f01c0",
-        "android_client_info": {
-          "package_name": "vungnv.com.foodappmerchant"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:776966267201:android:c4f79982c3c56b477f01c0",
-        "android_client_info": {
-          "package_name": "vungnv.com.foodappserver"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:776966267201:android:678dd7f90ee5bb417f01c0",
+        "mobilesdk_app_id": "1:831821159243:android:310948315005c30fd2a6ce",
         "android_client_info": {
           "package_name": "vungnv.com.foodyum"
         }
       },
       "oauth_client": [
         {
-          "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
+          "client_id": "831821159243-vnjukg2il033jl360hibg60avdk49ltc.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU"
+          "current_key": "AIzaSyBNuhNYQysMGjYcPjgj8bhgyR6l6VQkK34"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
+              "client_id": "831821159243-vnjukg2il033jl360hibg60avdk49ltc.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

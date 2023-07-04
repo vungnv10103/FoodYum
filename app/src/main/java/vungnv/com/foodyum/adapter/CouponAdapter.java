@@ -62,7 +62,7 @@ public class CouponAdapter extends RecyclerView.Adapter<CouponAdapter.ViewHolder
         if (context != null && context instanceof Activity && !((Activity) context).isFinishing()) {
             Coupon item = list.get(position);
 
-            String idImage = item.img;
+            String idImage = item.img + ".png";
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
             storageRef.child("images_coupon/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

@@ -261,7 +261,7 @@ public class AddToCartActivity extends AppCompatActivity implements Constant {
             tvOldPrice.setPaintFlags(tvOldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             tvNewPrice.setText(priceOfOne + "đ");
             tvDesc.setText(data.getString("desc"));
-            setImage(data.getString("img"));
+            setImage(data.getString("img") + ".png");
             btnAddToCart.setText("Thêm • " + priceOfOne + "đ");
 
 

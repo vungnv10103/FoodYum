@@ -43,11 +43,11 @@ dependencies {
 //    implementation "com.github.AchmadHafid:LottieDialog:5.0.0"
 
     // firebase
-    implementation 'com.google.firebase:firebase-auth:21.1.0'
-    implementation 'com.google.firebase:firebase-database:20.1.0'
-    implementation 'com.google.firebase:firebase-storage:20.1.0'
+    implementation 'com.google.firebase:firebase-auth:22.0.0'
+    implementation 'com.google.firebase:firebase-database:20.2.2'
+    implementation 'com.google.firebase:firebase-storage:20.2.1'
     implementation 'com.google.firebase:firebase-messaging:23.1.2'
-    implementation 'com.google.firebase:firebase-inappmessaging-display:20.3.1'
+    implementation 'com.google.firebase:firebase-inappmessaging-display:20.3.2'
 
     // expandableTextView
     implementation 'com.ms-square:expandableTextView:0.1.4'
@@ -62,7 +62,7 @@ dependencies {
     //implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
     // Google
-    implementation 'com.google.android.gms:play-services-auth:20.4.1'
+    implementation 'com.google.android.gms:play-services-auth:20.6.0'
 
     // ViewPager2
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
@@ -88,7 +88,7 @@ dependencies {
     implementation 'me.relex:circleindicator:2.1.6'
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'

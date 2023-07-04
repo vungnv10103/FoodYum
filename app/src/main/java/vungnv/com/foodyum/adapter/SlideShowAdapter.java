@@ -50,6 +50,7 @@ public class SlideShowAdapter extends RecyclerView.Adapter<SlideShowAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if (context instanceof Activity && !((Activity) context).isFinishing()) {
             String idImage = list.get(position).img;
+            Log.d(TAG, "onBindViewHolder: " + idImage);
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
             storageRef.child("images_slideshow/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

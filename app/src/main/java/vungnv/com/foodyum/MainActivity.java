@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements Constant {
         setContentView(binding.getRoot());
 
         notification.createNotificationChannel1(MainActivity.this);
-        //vungnv.com.foodyum.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
+//        vungnv.com.foodyum.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
 

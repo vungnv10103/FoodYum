@@ -66,7 +66,7 @@ public class ItemProductsRecommendAdapter extends RecyclerView.Adapter<ItemProdu
         if (context instanceof Activity && !((Activity) context).isFinishing()) {
             Product item = list.get(position);
 
-            String idImage = item.img;
+            String idImage = item.img + ".png";
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
             storageRef.child("images_product/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

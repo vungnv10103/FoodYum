@@ -549,7 +549,7 @@ public class ShowAllProductsByMerchantActivity extends AppCompatActivity impleme
         tvNameProduct.setText(data.getString("name"));
         tvNewPrice.setText(sPriceOfOne + "đ");
         tvDescription.setText(data.getString("desc"));
-        setImageProduct(idMerchant, data.getString("img"), imgProduct);
+        setImageProduct(idMerchant, data.getString("img") + ".png", imgProduct);
         btnAddToCart.setText("Thêm • " + sPriceOfOne + "đ");
         tvOldPrice.setText(sPriceOfOne / (1 - discount / 100) + "đ");
         if (discount == 0) {
